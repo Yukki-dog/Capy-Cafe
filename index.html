@@ -6,88 +6,109 @@
 <title>Capybara Café</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #f2e9e4;
+    background: url('bg2.png') no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     overflow: hidden;
   }
-
   .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
   }
-
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
   button {
     border: none;
-    cursor: pointer;
     background: none;
+    cursor: pointer;
     padding: 0;
     margin: 15px 0;
-    transition: transform 0.2s ease;
+    transition: transform 0.3s ease;
   }
-
-  button:hover {
-    transform: scale(1.05);
-  }
-
-  #playBtn img, #settingsBtn img {
-    width: 700px; /* CSS подгонка под экран */
-    height: auto;
-  }
-
+  button:hover { transform: scale(1.05); }
+  #playBtn img, #settingsBtn img { width: 700px; height: auto; }
   #settingsModal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -60%);
-    background: #fff8f0;
+    width: 800px;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    z-index: 100;
-    width: 800px;
+    background: url('bg1.png') no-repeat center center;
+    background-size: cover;
     opacity: 0;
-    transition: all 0.3s ease;
     pointer-events: none;
+    transition: all 0.4s ease;
+    z-index: 100;
   }
-
   #settingsModal.show {
     opacity: 1;
     transform: translate(-50%, -50%);
     pointer-events: auto;
   }
+  #overlay {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    display: none;
+    transition: opacity 0.3s ease;
+    z-index: 50;
+  }
+  #overlay.show { display: block; opacity: 1; }
 
   .slider-container {
     margin: 15px 0;
-    text-align: left;
   }
-
   .slider-container label {
-    display: block;
-    margin-bottom: 5px;
     font-size: 18px;
+    margin-bottom: 5px;
+    display: block;
   }
-
   input[type=range] {
+    -webkit-appearance: none;
     width: 100%;
+    height: 12px;
+    background: #c4aa60;
+    border-radius: 6px;
+    outline: none;
   }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  input[type=range]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+  }
+  input[type=range]::-moz-range-thumb:hover { transform: scale(1.2); }
 
-  #fullscreenBtn, #languageBtn {
-    width: 100px;
-    height: 100px;
-    margin: 10px;
-    transition: transform 0.2s ease;
-  }
-
-  #fullscreenBtn:hover, #languageBtn:hover {
-    transform: scale(1.1);
-  }
+  #fullscreenBtn, #languageBtn { width: 100px; height: 100px; margin: 10px; transition: transform 0.2s ease; }
+  #fullscreenBtn:hover, #languageBtn:hover { transform: scale(1.1); }
 
   #closeSettings {
     margin-top: 20px;
@@ -99,25 +120,21 @@
     background: #e0c097;
     transition: background 0.2s ease;
   }
+  #closeSettings:hover { background: #d4ab7c; }
 
-  #closeSettings:hover {
-    background: #d4ab7c;
-  }
-
-  #overlay {
-    display: none;
+  #loadingModal {
     position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.4);
-    z-index: 50;
-    opacity: 0;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width:500px;
+    opacity:0;
+    pointer-events:none;
     transition: opacity 0.3s ease;
+    z-index:200;
   }
-
-  #overlay.show {
-    display: block;
-    opacity: 1;
-  }
+  #loadingModal.show { opacity:1; pointer-events:auto; }
+  #loadingModal img { width:100%; height:auto; }
 </style>
 </head>
 <body>
@@ -131,30 +148,41 @@
 
 <div id="settingsModal">
   <div class="slider-container">
-    <label for="musicSlider">Music: <span id="musicValue">85</span></label>
+    <label id="musicLabel" for="musicSlider">Music</label>
     <input type="range" id="musicSlider" min="0" max="100">
   </div>
   <div class="slider-container">
-    <label for="soundSlider">Sound: <span id="soundValue">100</span></label>
+    <label id="soundLabel" for="soundSlider">Sound</label>
     <input type="range" id="soundSlider" min="0" max="100">
   </div>
   <div style="display:flex; justify-content:center; margin-top:20px;">
-    <button id="fullscreenBtn"><img src="Fullscreen.png" alt="Fullscreen"></button>
-    <button id="languageBtn"><img src="PlayEng.png" alt="Language"></button>
+    <button id="fullscreenBtn"><img src="FullscreenEng.png" alt="Fullscreen"></button>
+    <button id="languageBtn"><img src="LanguageEng.png" alt="Language"></button>
   </div>
   <div style="text-align:center;">
     <button id="closeSettings">Close</button>
   </div>
 </div>
 
-<script>
-  // ======= LocalStorage defaults =======
-  if(localStorage.musicVolume === undefined) localStorage.musicVolume = 85;
-  if(localStorage.soundVolume === undefined) localStorage.soundVolume = 100;
-  if(localStorage.fullscreen === undefined) localStorage.fullscreen = false;
-  if(localStorage.language === undefined) localStorage.language = "eng";
+<div id="loadingModal">
+  <img id="loadingImg" src="okno.png" alt="Loading">
+</div>
 
-  // ======= Elements =======
+<audio id="clickSound" src="click.wav"></audio>
+<audio id="closeSound" src="close.wav"></audio>
+<audio id="koverSound" src="kover.wav"></audio>
+<audio id="sh1Sound" src="sh1.wav"></audio>
+<audio id="musicSound" src="music.mp3" loop></audio>
+<audio id="loadingSound" src="loading.wav"></audio>
+
+<script>
+  // ===== LocalStorage defaults =====
+  if(localStorage.musicVolume===undefined) localStorage.musicVolume=85;
+  if(localStorage.soundVolume===undefined) localStorage.soundVolume=100;
+  if(localStorage.fullscreen===undefined) localStorage.fullscreen=false;
+  if(localStorage.language===undefined) localStorage.language="eng";
+
+  // ===== Elements =====
   const playBtn = document.getElementById('playBtn');
   const settingsBtn = document.getElementById('settingsBtn');
   const overlay = document.getElementById('overlay');
@@ -162,82 +190,102 @@
   const closeSettings = document.getElementById('closeSettings');
   const musicSlider = document.getElementById('musicSlider');
   const soundSlider = document.getElementById('soundSlider');
-  const musicValue = document.getElementById('musicValue');
-  const soundValue = document.getElementById('soundValue');
+  const musicLabel = document.getElementById('musicLabel');
+  const soundLabel = document.getElementById('soundLabel');
   const fullscreenBtn = document.getElementById('fullscreenBtn');
   const languageBtn = document.getElementById('languageBtn');
+  const loadingModal = document.getElementById('loadingModal');
+  const loadingImg = document.getElementById('loadingImg');
 
-  // ======= Initialize sliders =======
+  const clickSound = document.getElementById('clickSound');
+  const closeSound = document.getElementById('closeSound');
+  const koverSound = document.getElementById('koverSound');
+  const sh1Sound = document.getElementById('sh1Sound');
+  const musicSound = document.getElementById('musicSound');
+  const loadingSound = document.getElementById('loadingSound');
+
+  // ===== Initialize sliders =====
   musicSlider.value = localStorage.musicVolume;
   soundSlider.value = localStorage.soundVolume;
-  musicValue.textContent = musicSlider.value;
-  soundValue.textContent = soundSlider.value;
+  musicSound.volume = localStorage.musicVolume/100;
+  [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>s.volume=localStorage.soundVolume/100);
 
-  // ======= Settings open/close =======
-  function openSettings() {
-    settingsModal.classList.add('show');
-    overlay.classList.add('show');
+  // ===== Language =====
+  const texts = {eng:{music:"Music",sound:"Sound",close:"Close"},ru:{music:"Музыка",sound:"Звук",close:"Закрыть"}};
+  function updateLanguage(){
+    if(localStorage.language==="eng"){
+      playBtn.querySelector('img').src="PlayEng.png";
+      settingsBtn.querySelector('img').src="SettingsEng.png";
+      fullscreenBtn.querySelector('img').src="FullscreenEng.png";
+      languageBtn.querySelector('img').src="LanguageEng.png";
+    } else {
+      playBtn.querySelector('img').src="PlayRu.png";
+      settingsBtn.querySelector('img').src="SettingsRu.png";
+      fullscreenBtn.querySelector('img').src="FullscreenRu.png";
+      languageBtn.querySelector('img').src="LanguageRu.png";
+    }
+    musicLabel.textContent = texts[localStorage.language].music;
+    soundLabel.textContent = texts[localStorage.language].sound;
+    closeSettings.textContent = texts[localStorage.language].close;
   }
+  updateLanguage();
 
-  function closeSettingsFunc() {
-    settingsModal.classList.remove('show');
-    overlay.classList.remove('show');
-  }
-
+  // ===== Settings open/close =====
+  function openSettings(){clickSound.play(); settingsModal.classList.add('show'); overlay.classList.add('show');}
+  function closeSettingsFunc(){closeSound.play(); settingsModal.classList.remove('show'); overlay.classList.remove('show');}
   settingsBtn.addEventListener('click', openSettings);
   closeSettings.addEventListener('click', closeSettingsFunc);
   overlay.addEventListener('click', closeSettingsFunc);
 
-  // ======= Sliders change =======
-  musicSlider.addEventListener('input', () => {
-    musicValue.textContent = musicSlider.value;
+  // ===== Sliders =====
+  musicSlider.addEventListener('input', ()=>{
     localStorage.musicVolume = musicSlider.value;
+    musicSound.volume = musicSlider.value/100;
+    koverSound.volume = soundSlider.value/100;
+    koverSound.play();
   });
-
-  soundSlider.addEventListener('input', () => {
-    soundValue.textContent = soundSlider.value;
+  soundSlider.addEventListener('input', ()=>{
     localStorage.soundVolume = soundSlider.value;
+    [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>s.volume=soundSlider.value/100);
+    koverSound.play();
   });
 
-  // ======= Fullscreen =======
-  fullscreenBtn.addEventListener('click', () => {
-    if(!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      localStorage.fullscreen = true;
-    } else {
-      if(document.exitFullscreen) {
-        document.exitFullscreen();
-        localStorage.fullscreen = false;
-      }
-    }
+  // ===== Fullscreen =====
+  fullscreenBtn.addEventListener('click', ()=>{
+    clickSound.play();
+    if(!document.fullscreenElement){document.documentElement.requestFullscreen(); localStorage.fullscreen=true;}
+    else{document.exitFullscreen(); localStorage.fullscreen=false;}
   });
 
-  // ======= Language toggle =======
-  function updateLanguage() {
-    if(localStorage.language === "eng") {
-      playBtn.firstElementChild.src = "PlayEng.png";
-      settingsBtn.firstElementChild.src = "SettingsEng.png";
-      languageBtn.firstElementChild.src = "PlayEng.png";
-    } else {
-      playBtn.firstElementChild.src = "PlayRu.png";
-      settingsBtn.firstElementChild.src = "SettingsRu.png";
-      languageBtn.firstElementChild.src = "PlayRu.png";
-    }
-  }
-
-  languageBtn.addEventListener('click', () => {
-    if(localStorage.language === "eng") localStorage.language = "ru";
-    else localStorage.language = "eng";
+  // ===== Language button =====
+  languageBtn.addEventListener('click', ()=>{
+    clickSound.play();
+    localStorage.language = (localStorage.language==="eng")?"ru":"eng";
     updateLanguage();
   });
 
-  updateLanguage();
+  // ===== Music autoplay =====
+  musicSound.play().catch(()=>{});
 
-  // ======= Play button =======
-  playBtn.addEventListener('click', () => {
-    window.location.href = 'cafe.html';
+  // ===== Play button with mini-loading =====
+  playBtn.addEventListener('click', ()=>{
+    sh1Sound.play();
+    musicSound.pause();
+    loadingModal.classList.add('show');
+    loadingSound.volume = localStorage.musicVolume/100;
+    loadingSound.play();
+
+    let toggle = true;
+    const interval = setInterval(()=>{
+      loadingImg.src = toggle?"okno2.png":"okno.png";
+      toggle=!toggle;
+    },1000);
+
+    loadingSound.onended = ()=>{
+      clearInterval(interval);
+      window.location.href = "cafe.html";
+    };
   });
-
 </script>
 
 </body>
