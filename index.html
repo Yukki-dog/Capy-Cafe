@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capybara Café</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f2e9e4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .container {
+    text-align: center;
+  }
+  button {
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    font-size: 18px;
+  }
+  #playBtn, #settingsBtn {
+    background: none;
+    padding: 0;
+  }
+  #settingsModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff8f0;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    z-index: 100;
+    width: 300px;
+  }
+  .slider-container {
+    margin: 10px 0;
+    text-align: left;
+  }
+  .slider-container label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  input[type=range] {
+    width: 100%;
+  }
+  #fullscreenBtn, #languageBtn {
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+  }
+  #overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 50;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <button id="playBtn"><img src="Play.png" alt="Play"></button>
+  <button id="settingsBtn"><img src="Settings.png" alt="Settings"></button>
+</div>
+
+<div id="overlay"></div>
+
+<div id="settingsModal">
+  <div class="slider-container">
+    <label for="musicSlider">Music: <span id="musicValue">85</span></label>
+    <input type="range" id="musicSlider" min="0" max="100">
+  </div>
+  <div class="slider-container">
+    <label for="soundSlider">Sound: <span id="soundValue">100</span></label>
+    <input type="range" id="soundSlider" min="0" max="100">
+  </div>
+  <div>
+    <button id="fullscreenBtn"><img src="Fullscreen.png" alt="Fullscreen"></button>
+    <button id="languageBtn"><img src="eng.png" alt="Language"></button>
+  </div>
+  <div style="text-align:right; margin-top:10px;">
+    <button id="closeSettings">Close</button>
+  </div>
+</div>
+
+<script>
+  // ======= LocalStorage defaults =======
+  if(localStorage.musicVolume === undefined) localStorage.musicVolume = 85;
+  if(localStorage.soundVolume === undefined) localStorage.soundVolume = 100;
+  if(localStorage.fullscreen === undefined) localStorage.fullscreen = false;
+  if(localStorage.language === undefined) localStorage.language = "eng";
+
+  // ======= Elements =======
+  const playBtn = document.getElementById('playBtn');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const overlay = document.getElementById('overlay');
+  const settingsModal = document.getElementById('settingsModal');
+  const closeSettings = document.getElementById('closeSettings');
+  const musicSlider = document.getElementById('musicSlider');
+  const soundSlider = document.getElementById('soundSlider');
+  const musicValue = document.getElementById('musicValue');
+  const soundValue = document.getElementById('soundValue');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const languageBtn = document.getElementById('languageBtn');
+
+  // ======= Initialize sliders =======
+  musicSlider.value = localStorage.musicVolume;
+  soundSlider.value = localStorage.soundVolume;
+  musicValue.textContent = musicSlider.value;
+  soundValue.textContent = soundSlider.value;
+
+  // ======= Settings open/close =======
+  settingsBtn.addEventListener('click', () => {
+    settingsModal.style.display = 'block';
+    overlay.style.display = 'block';
+  });
+
+  closeSettings.addEventListener('click', () => {
+    settingsModal.style.display = 'none';
+    overlay.style.display = 'none';
+  });
+
+  overlay.addEventListener('click', () => {
+    settingsModal.style.display = 'none';
+    overlay.style.display = 'none';
+  });
+
+  // ======= Sliders change =======
+  musicSlider.addEventListener('input', () => {
+    musicValue.textContent = musicSlider.value;
+    localStorage.musicVolume = musicSlider.value;
+    // тут можно управлять реальной музыкой
+  });
+
+  soundSlider.addEventListener('input', () => {
+    soundValue.textContent = soundSlider.value;
+    localStorage.soundVolume = soundSlider.value;
+    // тут можно управлять звуками
+  });
+
+  // ======= Fullscreen =======
+  fullscreenBtn.addEventListener('click', () => {
+    if(!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      localStorage.fullscreen = true;
+    } else {
+      if(document.exitFullscreen) {
+        document.exitFullscreen();
+        localStorage.fullscreen = false;
+      }
+    }
+  });
+
+  // ======= Language toggle =======
+  function updateLanguageIcon() {
+    if(localStorage.language === "eng") {
+      languageBtn.firstElementChild.src = "eng.png";
+    } else {
+      languageBtn.firstElementChild.src = "ru.png";
+    }
+  }
+  languageBtn.addEventListener('click', () => {
+    if(localStorage.language === "eng") localStorage.language = "ru";
+    else localStorage.language = "eng";
+    updateLanguageIcon();
+    // тут можно вызвать функцию перерисовки текста на странице
+  });
+  updateLanguageIcon();
+
+  // ======= Play button =======
+  playBtn.addEventListener('click', () => {
+    window.location.href = 'cafe.html';
+  });
+
+</script>
+
+</body>
+</html>
