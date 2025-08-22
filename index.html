@@ -5,313 +5,253 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Capy Café ☕</title>
 <style>
+  /* === Общие стили === */
   body {
-    margin: 0;
-    padding: 0;
-    background: url('bg2.png') no-repeat center center fixed;
-    background-size: cover;
+    margin:0;
+    padding:0;
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     overflow: hidden;
-  }
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1;
-    opacity: 0;
-    animation: fadeIn 1s forwards;
-  }
-  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-  button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 0;
-    margin: 15px 0;
-    transition: transform 0.3s ease;
-  }
-  button:hover { transform: scale(1.05); }
-  #playBtn img, #settingsBtn img { width: 700px; height: auto; }
-  #settingsModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -60%);
-    width: 800px;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    background: url('bg1.png') no-repeat center center;
+    background: url('bg2.png') no-repeat center center;
     background-size: cover;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.4s ease;
+  }
+
+  /* === Деньги и звезды === */
+  #topBar {
+    position: absolute;
+    top: 10px; left: 10px;
+    font-size: 24px;
+    color: #fff;
+    display: flex;
+    gap: 20px;
     z-index: 100;
   }
-  #settingsModal.show {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-    pointer-events: auto;
-  }
-  #overlay {
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.4);
+
+  #money { font-weight: bold; }
+  #stars { font-weight: bold; }
+
+  /* === Клиент === */
+  .client {
+    position: absolute;
+    bottom: 0;
     opacity: 0;
-    display: none;
-    transition: opacity 0.3s ease;
-    z-index: 50;
+    transition: opacity 0.5s, transform 0.5s;
   }
-  #overlay.show { display: block; opacity: 1; }
 
-  .slider-container {
-    margin: 15px 0;
-  }
-  .slider-container label {
-    font-size: 18px;
-    margin-bottom: 5px;
-    display: block;
-  }
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 12px;
-    background: #c4aa60;
-    border-radius: 6px;
-    outline: none;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    background: #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    transition: transform 0.2s;
-  }
-  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-  input[type=range]::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    background: #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    transition: transform 0.2s;
-  }
-  input[type=range]::-moz-range-thumb:hover { transform: scale(1.2); }
+  .client.show { opacity: 1; transform: translateY(0); }
 
-  #fullscreenBtn, #languageBtn { width: 100px; height: 100px; margin: 10px; transition: transform 0.2s ease; }
-  #fullscreenBtn:hover, #languageBtn:hover { transform: scale(1.1); }
-
-  #closeSettings {
-    margin-top: 20px;
+  /* === Облачко заказа === */
+  .orderBubble {
+    position: absolute;
+    bottom: 150px;
+    left: 50%;
+    transform: translateX(-50%) translateY(50px);
+    background: rgba(255,255,255,0.9);
+    border-radius: 20px;
     padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 10px;
-    border: none;
-    background: #e0c097;
-    transition: background 0.2s ease;
+    font-size: 18px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
   }
-  #closeSettings:hover { background: #d4ab7c; }
+  .orderBubble.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-#loadingModal {
-  position: fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background: rgba(0,0,0,0.5); /* полупрозрачный фон */
-  opacity:0;
-  pointer-events:none;
-  transition: opacity 0.3s ease;
-  z-index:200;
-}
-#loadingModal.show { 
-  opacity:1; 
-  pointer-events:auto; 
-}
-#loadingModal img {
-  max-width: 80%;
-  max-height: 80%;
-}
+  /* === Кнопки принять/отклонить === */
+  #actionButtons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+  #actionButtons img {
+    width: 80px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  #actionButtons img:hover { transform: scale(1.1); }
 
+  /* === Ачивки всплывающее окно === */
+  #achievementPopup {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 20px 40px;
+    font-size: 24px;
+    text-align: center;
+    display: none;
+    z-index: 200;
+  }
+
+  /* === Отзывы клиентов === */
+  #commentsPanel {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    display: none;
+    z-index: 150;
+  }
+
+  /* === Настройки === */
+  #settingsPanel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+  #settingsPanel img {
+    width: 50px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  #settingsPanel img:hover { transform: scale(1.1); }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <button id="playBtn"><img src="PlayEng.png" alt="Play"></button>
-  <button id="settingsBtn"><img src="SettingsEng.png" alt="Settings"></button>
+<!-- Верхняя панель: деньги, звезды -->
+<div id="topBar">
+  <div id="money">$0</div>
+  <div id="stars">1✮</div>
 </div>
 
-<div id="overlay"></div>
-
-<div id="settingsModal">
-  <div class="slider-container">
-    <label id="musicLabel" for="musicSlider">Music</label>
-    <input type="range" id="musicSlider" min="0" max="100">
-  </div>
-  <div class="slider-container">
-    <label id="soundLabel" for="soundSlider">Sound</label>
-    <input type="range" id="soundSlider" min="0" max="100">
-  </div>
-  <div style="display:flex; justify-content:center; margin-top:20px;">
-    <button id="fullscreenBtn"><img src="FullscreenEng.png" alt="Fullscreen"></button>
-    <button id="languageBtn"><img src="LanguageEng.png" alt="Language"></button>
-  </div>
-  <div style="text-align:center;">
-    <button id="closeSettings">Close</button>
-  </div>
+<!-- Панель кнопок действий -->
+<div id="actionButtons">
+  <img id="acceptBtn" src="accept.png" alt="Accept">
+  <img id="declineBtn" src="decline.png" alt="Decline">
 </div>
 
-<div id="loadingModal">
-  <img id="loadingImg" src="okno.png" alt="Loading">
+<!-- Настройки -->
+<div id="settingsPanel">
+  <img id="settingsBtn" src="SettingsEng.png" alt="Settings">
+  <img id="commentsBtn" src="comment.png" alt="Comments">
 </div>
+
+<!-- Панель отзывов -->
+<div id="commentsPanel"></div>
+
+<!-- Всплывающее окно ачивок -->
+<div id="achievementPopup"></div>
+
+<!-- Клиент -->
+<img id="clientImg" class="client" src="capy.png" alt="Client">
+
+<!-- Облачко заказа -->
+<div id="orderBubble" class="orderBubble"></div>
 
 <audio id="clickSound" src="click.wav"></audio>
-<audio id="closeSound" src="close.wav"></audio>
-<audio id="koverSound" src="kover.wav"></audio>
-<audio id="sh1Sound" src="sh1.wav"></audio>
-<audio id="musicSound" src="music.mp3" loop></audio>
-<audio id="loadingSound" src="loading.wav"></audio>
+<audio id="achievementSound" src="achievement.wav"></audio>
+<audio id="musicSound" src="music4game.mp3" loop></audio>
 
 <script>
-  // ===== LocalStorage defaults =====
-  if(localStorage.musicVolume===undefined) localStorage.musicVolume=85;
-  if(localStorage.soundVolume===undefined) localStorage.soundVolume=100;
-  if(localStorage.fullscreen===undefined) localStorage.fullscreen=false;
-  if(localStorage.language===undefined) localStorage.language="eng";
+  // ====== LOCALSTORAGE INITIALIZATION ======
+  if(!localStorage.cafeMoney) localStorage.cafeMoney = 0;
+  if(!localStorage.cafeStars) localStorage.cafeStars = 1;
+  if(!localStorage.language) localStorage.language = 'eng';
+  if(!localStorage.achievements) localStorage.achievements = JSON.stringify([]);
+  if(!localStorage.comments) localStorage.comments = JSON.stringify([]);
 
-  // ===== Elements =====
-  const playBtn = document.getElementById('playBtn');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const overlay = document.getElementById('overlay');
-  const settingsModal = document.getElementById('settingsModal');
-  const closeSettings = document.getElementById('closeSettings');
-  const musicSlider = document.getElementById('musicSlider');
-  const soundSlider = document.getElementById('soundSlider');
-  const musicLabel = document.getElementById('musicLabel');
-  const soundLabel = document.getElementById('soundLabel');
-  const fullscreenBtn = document.getElementById('fullscreenBtn');
-  const languageBtn = document.getElementById('languageBtn');
-  const loadingModal = document.getElementById('loadingModal');
-  const loadingImg = document.getElementById('loadingImg');
+  // ====== VARIABLES ======
+  let money = parseInt(localStorage.cafeMoney);
+  let stars = parseInt(localStorage.cafeStars);
+  let clientsServed = 0;
+  let currentClient = null;
+  let currentOrder = null;
 
+  const clientImg = document.getElementById('clientImg');
+  const orderBubble = document.getElementById('orderBubble');
+  const moneyDiv = document.getElementById('money');
+  const starsDiv = document.getElementById('stars');
+  const acceptBtn = document.getElementById('acceptBtn');
+  const declineBtn = document.getElementById('declineBtn');
+  const commentsPanel = document.getElementById('commentsPanel');
+  const commentsBtn = document.getElementById('commentsBtn');
+  const achievementPopup = document.getElementById('achievementPopup');
   const clickSound = document.getElementById('clickSound');
-  const closeSound = document.getElementById('closeSound');
-  const koverSound = document.getElementById('koverSound');
-  const sh1Sound = document.getElementById('sh1Sound');
+  const achievementSound = document.getElementById('achievementSound');
   const musicSound = document.getElementById('musicSound');
-  const loadingSound = document.getElementById('loadingSound');
 
+  // ====== MUSIC ======
+  musicSound.volume = 0.5;
+  musicSound.play().catch(()=>{document.body.addEventListener('click', ()=>musicSound.play(),{once:true});});
 
-
-// ===== Music autoplay =====
-window.addEventListener('load', () => {
-  musicSound.volume = localStorage.musicVolume / 100;
-  musicSound.play().catch(() => {
-    // Если автоплей заблокирован браузером, воспроизведение начнется после первого клика
-    document.body.addEventListener('click', () => musicSound.play(), {once: true});
-  });
-});
-
-
-
-
-  // ===== Initialize sliders =====
-  musicSlider.value = localStorage.musicVolume;
-  soundSlider.value = localStorage.soundVolume;
-  musicSound.volume = localStorage.musicVolume/100;
-  [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>s.volume=localStorage.soundVolume/100);
-
-  // ===== Language =====
-  const texts = {eng:{music:"Music",sound:"Sound",close:"Close"},ru:{music:"Музыка",sound:"Звук",close:"Закрыть"}};
-  function updateLanguage(){
-    if(localStorage.language==="eng"){
-      playBtn.querySelector('img').src="PlayEng.png";
-      settingsBtn.querySelector('img').src="SettingsEng.png";
-      fullscreenBtn.querySelector('img').src="FullscreenEng.png";
-      languageBtn.querySelector('img').src="LanguageEng.png";
-    } else {
-      playBtn.querySelector('img').src="PlayRu.png";
-      settingsBtn.querySelector('img').src="SettingsRu.png";
-      fullscreenBtn.querySelector('img').src="FullscreenRu.png";
-      languageBtn.querySelector('img').src="LanguageRu.png";
-    }
-    musicLabel.textContent = texts[localStorage.language].music;
-    soundLabel.textContent = texts[localStorage.language].sound;
-    closeSettings.textContent = texts[localStorage.language].close;
+  // ====== UTILITY FUNCTIONS ======
+  function updateTopBar() {
+    moneyDiv.textContent = `$${money}`;
+    starsDiv.textContent = stars+'✮';
   }
-  updateLanguage();
 
-  // ===== Settings open/close =====
-  function openSettings(){clickSound.play(); settingsModal.classList.add('show'); overlay.classList.add('show');}
-  function closeSettingsFunc(){closeSound.play(); settingsModal.classList.remove('show'); overlay.classList.remove('show');}
-  settingsBtn.addEventListener('click', openSettings);
-  closeSettings.addEventListener('click', closeSettingsFunc);
-  overlay.addEventListener('click', closeSettingsFunc);
+  function generateClient() {
+    // Рандомная капибара и аксессуар
+    const gender = Math.random() < 0.5 ? 'boy' : 'girl';
+    const imgSrc = gender==='boy' ? 'capy.png' : 'capygirl.png';
+    const accessories = ['hat','dress','jacket','jewelry',''];
+    let acc = accessories[Math.floor(Math.random()*accessories.length)];
+    currentClient = {gender,imgSrc,accessory:acc};
+    clientImg.src = imgSrc;
+    clientImg.classList.remove('show');
+    setTimeout(()=>{clientImg.classList.add('show');},100);
+    // Рандомное имя
+    currentClient.name = 'C'+Math.floor(Math.random()*10000);
+    // Случайный заказ (просто пример)
+    const orders = ['matcha','tea','coffee'];
+    currentOrder = orders[Math.floor(Math.random()*orders.length)];
+    orderBubble.textContent = currentOrder;
+    orderBubble.classList.remove('show');
+    setTimeout(()=>{orderBubble.classList.add('show');},200);
+  }
 
-  // ===== Sliders =====
-  musicSlider.addEventListener('input', ()=>{
-    localStorage.musicVolume = musicSlider.value;
-    musicSound.volume = musicSlider.value/100;
-    koverSound.volume = soundSlider.value/100;
-    koverSound.play();
-  });
-  soundSlider.addEventListener('input', ()=>{
-    localStorage.soundVolume = soundSlider.value;
-    [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>s.volume=soundSlider.value/100);
-    koverSound.play();
-  });
+  function addComment(name, starsCount, text){
+    let comments = JSON.parse(localStorage.comments);
+    comments.push({name,starsCount,text});
+    localStorage.comments = JSON.stringify(comments);
+  }
 
-  // ===== Fullscreen =====
-  fullscreenBtn.addEventListener('click', ()=>{
+  function showAchievement(text){
+    achievementPopup.textContent = text;
+    achievementPopup.style.display='block';
+    achievementSound.play();
+    setTimeout(()=>{achievementPopup.style.display='none';},3000);
+  }
+
+  function acceptOrder(){
     clickSound.play();
-    if(!document.fullscreenElement){document.documentElement.requestFullscreen(); localStorage.fullscreen=true;}
-    else{document.exitFullscreen(); localStorage.fullscreen=false;}
-  });
+    money += 50; // можно менять в зависимости от ачивок
+    clientsServed++;
+    if(clientsServed%10===0) showAchievement(`🎉 Обслужили ${clientsServed} клиентов! +200$`);
+    addComment(currentClient.name,5,`Отлично! Заказ ${currentOrder} выполнен.`);
+    localStorage.cafeMoney = money;
+    updateTopBar();
+    generateClient();
+  }
 
-  // ===== Language button =====
-  languageBtn.addEventListener('click', ()=>{
+  function declineOrder(){
     clickSound.play();
-    localStorage.language = (localStorage.language==="eng")?"ru":"eng";
-    updateLanguage();
-  });
+    addComment(currentClient.name,1,"Не приняли заказ. Деньги не даны.");
+    generateClient();
+  }
 
-  // ===== Music autoplay =====
-  musicSound.play().catch(()=>{});
+  // ====== BUTTON EVENTS ======
+  acceptBtn.addEventListener('click', acceptOrder);
+  declineBtn.addEventListener('click', declineOrder);
+  commentsBtn.addEventListener('click', ()=>{commentsPanel.style.display = commentsPanel.style.display==='block'?'none':'block';});
 
-  // ===== Play button with mini-loading =====
-  playBtn.addEventListener('click', ()=>{
-    sh1Sound.play();
-    musicSound.pause();
-    loadingModal.classList.add('show');
-    loadingSound.volume = localStorage.musicVolume/100;
-    loadingSound.play();
+  // ====== INITIALIZE ======
+  updateTopBar();
+  generateClient();
 
-    let toggle = true;
-    const interval = setInterval(()=>{
-      loadingImg.src = toggle?"okno2.png":"okno.png";
-      toggle=!toggle;
-    },1000);
-
-    loadingSound.onended = ()=>{
-      clearInterval(interval);
-      window.location.href = "cafe.html";
-    };
-  });
 </script>
-
 </body>
 </html>
