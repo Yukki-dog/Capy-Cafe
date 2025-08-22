@@ -16,62 +16,115 @@
     height: 100vh;
     overflow: hidden;
   }
+
   .container {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
+
   button {
     border: none;
     cursor: pointer;
-    margin: 10px;
-    font-size: 18px;
-  }
-  #playBtn, #settingsBtn {
     background: none;
     padding: 0;
+    margin: 15px 0;
+    transition: transform 0.2s ease;
   }
+
+  button:hover {
+    transform: scale(1.05);
+  }
+
+  #playBtn img, #settingsBtn img {
+    width: 700px; /* CSS подгонка под экран */
+    height: auto;
+  }
+
   #settingsModal {
-    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -60%);
     background: #fff8f0;
-    padding: 20px;
-    border-radius: 15px;
+    padding: 40px;
+    border-radius: 20px;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
     z-index: 100;
-    width: 300px;
+    width: 800px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
   }
+
+  #settingsModal.show {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+
   .slider-container {
-    margin: 10px 0;
+    margin: 15px 0;
     text-align: left;
   }
+
   .slider-container label {
     display: block;
     margin-bottom: 5px;
+    font-size: 18px;
   }
+
   input[type=range] {
     width: 100%;
   }
+
   #fullscreenBtn, #languageBtn {
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 100px;
     margin: 10px;
+    transition: transform 0.2s ease;
   }
+
+  #fullscreenBtn:hover, #languageBtn:hover {
+    transform: scale(1.1);
+  }
+
+  #closeSettings {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    background: #e0c097;
+    transition: background 0.2s ease;
+  }
+
+  #closeSettings:hover {
+    background: #d4ab7c;
+  }
+
   #overlay {
     display: none;
     position: fixed;
     top:0; left:0; width:100%; height:100%;
     background: rgba(0,0,0,0.4);
     z-index: 50;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #overlay.show {
+    display: block;
+    opacity: 1;
   }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <button id="playBtn"><img src="Play.png" alt="Play"></button>
-  <button id="settingsBtn"><img src="Settings.png" alt="Settings"></button>
+  <button id="playBtn"><img src="PlayEng.png" alt="Play"></button>
+  <button id="settingsBtn"><img src="SettingsEng.png" alt="Settings"></button>
 </div>
 
 <div id="overlay"></div>
@@ -85,11 +138,11 @@
     <label for="soundSlider">Sound: <span id="soundValue">100</span></label>
     <input type="range" id="soundSlider" min="0" max="100">
   </div>
-  <div>
+  <div style="display:flex; justify-content:center; margin-top:20px;">
     <button id="fullscreenBtn"><img src="Fullscreen.png" alt="Fullscreen"></button>
-    <button id="languageBtn"><img src="eng.png" alt="Language"></button>
+    <button id="languageBtn"><img src="PlayEng.png" alt="Language"></button>
   </div>
-  <div style="text-align:right; margin-top:10px;">
+  <div style="text-align:center;">
     <button id="closeSettings">Close</button>
   </div>
 </div>
@@ -121,32 +174,29 @@
   soundValue.textContent = soundSlider.value;
 
   // ======= Settings open/close =======
-  settingsBtn.addEventListener('click', () => {
-    settingsModal.style.display = 'block';
-    overlay.style.display = 'block';
-  });
+  function openSettings() {
+    settingsModal.classList.add('show');
+    overlay.classList.add('show');
+  }
 
-  closeSettings.addEventListener('click', () => {
-    settingsModal.style.display = 'none';
-    overlay.style.display = 'none';
-  });
+  function closeSettingsFunc() {
+    settingsModal.classList.remove('show');
+    overlay.classList.remove('show');
+  }
 
-  overlay.addEventListener('click', () => {
-    settingsModal.style.display = 'none';
-    overlay.style.display = 'none';
-  });
+  settingsBtn.addEventListener('click', openSettings);
+  closeSettings.addEventListener('click', closeSettingsFunc);
+  overlay.addEventListener('click', closeSettingsFunc);
 
   // ======= Sliders change =======
   musicSlider.addEventListener('input', () => {
     musicValue.textContent = musicSlider.value;
     localStorage.musicVolume = musicSlider.value;
-    // тут можно управлять реальной музыкой
   });
 
   soundSlider.addEventListener('input', () => {
     soundValue.textContent = soundSlider.value;
     localStorage.soundVolume = soundSlider.value;
-    // тут можно управлять звуками
   });
 
   // ======= Fullscreen =======
@@ -163,20 +213,25 @@
   });
 
   // ======= Language toggle =======
-  function updateLanguageIcon() {
+  function updateLanguage() {
     if(localStorage.language === "eng") {
-      languageBtn.firstElementChild.src = "eng.png";
+      playBtn.firstElementChild.src = "PlayEng.png";
+      settingsBtn.firstElementChild.src = "SettingsEng.png";
+      languageBtn.firstElementChild.src = "PlayEng.png";
     } else {
-      languageBtn.firstElementChild.src = "ru.png";
+      playBtn.firstElementChild.src = "PlayRu.png";
+      settingsBtn.firstElementChild.src = "SettingsRu.png";
+      languageBtn.firstElementChild.src = "PlayRu.png";
     }
   }
+
   languageBtn.addEventListener('click', () => {
     if(localStorage.language === "eng") localStorage.language = "ru";
     else localStorage.language = "eng";
-    updateLanguageIcon();
-    // тут можно вызвать функцию перерисовки текста на странице
+    updateLanguage();
   });
-  updateLanguageIcon();
+
+  updateLanguage();
 
   // ======= Play button =======
   playBtn.addEventListener('click', () => {
