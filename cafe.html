@@ -3,307 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capy Cafe</title>
+<title>Capy Café ☕</title>
 <style>
-  body, html { margin:0; padding:0; overflow:hidden; font-family:sans-serif; background: url('bg1.png') no-repeat center center; background-size: cover; }
-  #client { position:absolute; top:50px; left:-500px; width:300px; transition: all 1s ease; }
-  #client.show { left: 50px; opacity:1; }
-  #orderBubble { position:absolute; top:-50px; left:0; width:100px; text-align:center; }
-  #ingredients { position:absolute; top:10px; left:350px; display:flex; gap:20px; }
-  .ingredient { width: 150px; height:150px; cursor:pointer; position:relative; }
-  #cup { position:absolute; top:300px; left:500px; width:300px; height:300px; background:url('cup.png') no-repeat center center; background-size:contain; }
-  #actions { position:absolute; bottom:50px; left:500px; display:flex; gap:20px; }
-  button { padding:10px 20px; font-size:18px; cursor:pointer; }
-  #topPanel { position:absolute; top:10px; right:10px; display:flex; gap:20px; align-items:center; font-size:20px; color:#fff; }
-  #reviewsPanel { position:absolute; top:100px; left:50%; transform:translateX(-50%); width:600px; height:400px; background:#fff; border:2px solid #000; display:none; overflow-y:auto; }
-  #reviewsPanel h2 { text-align:center; }
-  #settings { position:absolute; top:10px; right:150px; cursor:pointer; width:50px; height:50px; }
-  #achievements { position:absolute; bottom:10px; left:10px; font-size:18px; color:#fff; }
+  body {
+    margin:0; padding:0;
+    font-family: Arial, sans-serif;
+    background: #f5f1e6;
+    overflow: hidden;
+  }
+  #topbar {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:60px;
+    background:#c4aa60;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 20px;
+    z-index:10;
+  }
+  #topbar div {display:flex; align-items:center;}
+  #topbar button {margin-left:10px; cursor:pointer; padding:5px;}
+  #money, #stars {font-weight:bold; font-size:18px; margin-left:10px;}
+  #commentsBtn {font-size:24px; cursor:pointer; margin-left:15px;}
+
+  #cafe-container {
+    position:relative;
+    width:100%; height:100vh;
+    display:flex; justify-content:center; align-items:center;
+  }
+
+  #door {
+    width:150px; height:250px;
+    background:#8B4513;
+    cursor:pointer;
+    display:flex; justify-content:center; align-items:center;
+    color:white; font-weight:bold;
+    position:absolute; right:50px; top:50%;
+    transform:translateY(-50%);
+  }
+
+  .client {
+    position:absolute;
+    width:100px; height:150px;
+    background:#ffd700;
+    border-radius:50% 50% 20% 20%;
+    display:flex; justify-content:center; align-items:flex-start;
+    flex-direction:column;
+    text-align:center;
+    font-weight:bold;
+  }
+
+  .bubble {
+    position:absolute;
+    bottom:160px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:5px 10px;
+    background:white;
+    border-radius:10px;
+    font-size:14px;
+    animation:appear 0.5s forwards;
+  }
+  @keyframes appear {from{opacity:0; transform:translateX(-50%) translateY(10px);} to{opacity:1; transform:translateX(-50%) translateY(0);}}
+
+  #orderPanel {
+    position:fixed; bottom:20px; right:20px;
+    background:#fff8dc; padding:10px;
+    border-radius:10px; box-shadow:0 0 5px rgba(0,0,0,0.3);
+  }
+  #orderText {font-weight:bold;}
+  #orderButtons button {margin:5px; cursor:pointer; padding:5px 10px;}
+
+  #achievements {
+    position:fixed; top:80px; right:20px;
+    background:#fffae6; padding:10px; border-radius:10px;
+    max-width:200px; font-size:14px; display:none;
+  }
+
+  #commentsModal {
+    position:fixed; top:50%; left:50%;
+    transform:translate(-50%, -50%);
+    background:white; padding:20px;
+    border-radius:15px; box-shadow:0 0 10px rgba(0,0,0,0.4);
+    display:none; z-index:20;
+    max-height:70vh; overflow-y:auto;
+  }
+  #commentsModal h3 {margin-top:0;}
+  #commentsModal button {margin-top:10px;}
 </style>
 </head>
 <body>
 
-<!-- Клиент -->
-<div id="client">
-  <img id="clientImg" src="capy.png" width="300">
-  <div id="orderBubble">🍵</div>
-  <div id="clientActions">
-    <button id="acceptOrder">✔</button>
-    <button id="declineOrder">✖</button>
+<div id="topbar">
+  <div>
+    💰 <span id="money">0</span>
+    ✮ <span id="stars">1</span>
+  </div>
+  <div>
+    <button id="commentsBtn">💬</button>
+    <button id="settingsBtn">⚙</button>
   </div>
 </div>
 
-<!-- Ингредиенты -->
-<div id="ingredients">
-  <div class="ingredient" data-name="matcha" style="background:url('matcha.png') center/contain no-repeat;"></div>
-  <div class="ingredient" data-name="tea" style="background:url('tea.png') center/contain no-repeat;"></div>
-  <div class="ingredient" data-name="coffee" style="background:url('coffee.png') center/contain no-repeat;"></div>
-  <div class="ingredient" data-name="marshmallow" style="background:url('marshmallow.png') center/contain no-repeat;"></div>
-  <div class="ingredient" data-name="milk" style="background:url('milk.png') center/contain no-repeat;"></div>
+<div id="cafe-container">
+  <div id="door">Door</div>
 </div>
 
-<!-- Чашка -->
-<div id="cup"></div>
-
-<!-- Действия -->
-<div id="actions">
-  <button id="undo">←</button>
-  <button id="redo">→</button>
-  <button id="eat">Eat</button>
-  <button id="done">Done</button>
+<div id="orderPanel">
+  <div id="orderText">No order</div>
+  <div id="orderButtons">
+    <button id="acceptBtn">Accept</button>
+    <button id="declineBtn">Decline</button>
+  </div>
 </div>
 
-<!-- Верхняя панель -->
-<div id="topPanel">
-  <span id="money">💰 0</span>
-  <span id="stars">✮ 1</span>
-  <span id="reviewsBtn">💬</span>
-  <img id="settings" src="settings.png">
+<div id="achievements"></div>
+
+<div id="commentsModal">
+  <h3>Comments</h3>
+  <div id="commentsList"></div>
+  <button id="closeComments">Close</button>
 </div>
-
-<!-- Панель отзывов -->
-<div id="reviewsPanel">
-  <h2>Reviews</h2>
-  <div id="reviewsList"></div>
-  <button id="closeReviews">Close</button>
-</div>
-
-<!-- Ачивки -->
-<div id="achievements">Achievements: 0/10 clients</div>
-
-<audio id="bgMusic" src="music4game.mp3" loop autoplay></audio>
 
 <script>
-let language = localStorage.getItem('language') || 'eng';
-let money = parseInt(localStorage.getItem('money') || '0');
-let starsCafe = parseInt(localStorage.getItem('starsCafe') || '1');
-let reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-let achievementsCount = parseInt(localStorage.getItem('achievements') || '0');
+let money = Number(localStorage.getItem("money")||0);
+let stars = Number(localStorage.getItem("stars")||1);
+let clientsServed = Number(localStorage.getItem("clientsServed")||0);
+let achievementsUnlocked = JSON.parse(localStorage.getItem("achievementsUnlocked")||"[]");
 
-const client = document.getElementById('client');
-const clientImg = document.getElementById('clientImg');
-const orderBubble = document.getElementById('orderBubble');
-const cup = document.getElementById('cup');
-const moneySpan = document.getElementById('money');
-const starsSpan = document.getElementById('stars');
-const reviewsPanel = document.getElementById('reviewsPanel');
-const reviewsList = document.getElementById('reviewsList');
-const reviewsBtn = document.getElementById('reviewsBtn');
-const eatBtn = document.getElementById('eat');
-const doneBtn = document.getElementById('done');
-const undoBtn = document.getElementById('undo');
-const redoBtn = document.getElementById('redo');
+const moneyEl = document.getElementById("money");
+const starsEl = document.getElementById("stars");
+const cafeContainer = document.getElementById("cafe-container");
+const door = document.getElementById("door");
+const orderText = document.getElementById("orderText");
+const acceptBtn = document.getElementById("acceptBtn");
+const declineBtn = document.getElementById("declineBtn");
+const achievementsEl = document.getElementById("achievements");
+const commentsModal = document.getElementById("commentsModal");
+const commentsList = document.getElementById("commentsList");
+const commentsBtn = document.getElementById("commentsBtn");
+const closeComments = document.getElementById("closeComments");
 
-let currentOrder = null;
-let cupIngredients = [];
-let history = [];
-let historyRedo = [];
+// === Clients logic ===
+const orders = ["Matcha", "Tea", "Coffee"];
+let currentClient = null;
 
-function saveProgress() {
-  localStorage.setItem('money', money);
-  localStorage.setItem('starsCafe', starsCafe);
-  localStorage.setItem('reviews', JSON.stringify(reviews));
-  localStorage.setItem('achievements', achievementsCount);
+function generateRandomName() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let name = letters[Math.floor(Math.random()*letters.length)];
+  name += letters[Math.floor(Math.random()*letters.length)];
+  return name;
 }
 
-function loadReviews() {
-  reviewsList.innerHTML = '';
-  reviews.forEach(r => {
-    const div = document.createElement('div');
-    div.innerHTML = `${r.name} ${'✮'.repeat(r.stars)}<br>${r.text}`;
-    reviewsList.appendChild(div);
+function createClient() {
+  if(currentClient) currentClient.remove();
+  const client = document.createElement("div");
+  client.classList.add("client");
+  const name = generateRandomName();
+  client.dataset.name = name;
+  client.innerHTML = `<div>${name}</div><div class="bubble">${orders[Math.floor(Math.random()*orders.length)]}</div>`;
+  client.style.left = (Math.random()*50+10)+"%";
+  client.style.top = (Math.random()*40+40)+"%";
+  cafeContainer.appendChild(client);
+  currentClient = client;
+}
+
+door.addEventListener("click", ()=> {
+  createClient();
+  // show order panel
+  orderText.textContent = currentClient.querySelector(".bubble").textContent;
+});
+
+// === Accept / Decline ===
+acceptBtn.addEventListener("click", ()=>{
+  if(!currentClient) return;
+  money += 50;
+  clientsServed += 1;
+  // stars logic
+  stars = Math.min(5, stars+1); // упрощенно
+  updateUI();
+  unlockAchievements();
+  currentClient.remove();
+  currentClient = null;
+  orderText.textContent = "No order";
+});
+
+declineBtn.addEventListener("click", ()=>{
+  if(!currentClient) return;
+  stars = Math.max(1, stars-1);
+  updateUI();
+  addComment(`${currentClient.dataset.name} ✮ 1 - не приняли заказ`);
+  currentClient.remove();
+  currentClient = null;
+  orderText.textContent = "No order";
+});
+
+function updateUI(){
+  moneyEl.textContent = money;
+  starsEl.textContent = stars;
+  localStorage.setItem("money", money);
+  localStorage.setItem("stars", stars);
+  localStorage.setItem("clientsServed", clientsServed);
+}
+
+function addComment(text){
+  let comments = JSON.parse(localStorage.getItem("comments")||"[]");
+  comments.push(text);
+  localStorage.setItem("comments", JSON.stringify(comments));
+}
+
+commentsBtn.addEventListener("click", ()=>{
+  commentsList.innerHTML = "";
+  let comments = JSON.parse(localStorage.getItem("comments")||"[]");
+  comments.forEach(c=>{
+    const div = document.createElement("div");
+    div.textContent = c;
+    commentsList.appendChild(div);
+  });
+  commentsModal.style.display = "block";
+});
+closeComments.addEventListener("click", ()=>commentsModal.style.display="none");
+
+// === Achievements ===
+const allAchievements = [
+  {name:"First Step", condition:()=>clientsServed>=1, reward:50},
+  {name:"5 Stars!", condition:()=>stars===5, reward:100},
+  {name:"10 Clients", condition:()=>clientsServed>=10, reward:200},
+];
+
+function unlockAchievements(){
+  allAchievements.forEach(a=>{
+    if(a.condition() && !achievementsUnlocked.includes(a.name)){
+      achievementsUnlocked.push(a.name);
+      localStorage.setItem("achievementsUnlocked", JSON.stringify(achievementsUnlocked));
+      money += a.reward;
+      showAchievement(a.name);
+      updateUI();
+    }
   });
 }
 
-function generateClient() {
-  // Выбор рандомного клиента
-  const genders = ['boy', 'girl'];
-  const gender = genders[Math.floor(Math.random()*2)];
-  clientImg.src = gender==='boy'?'capy.png':'capygirl.png';
-  // Рандомный аксессуар
-  const accessories = ['hat','dress','jacket','jewelry'];
-  const chosen = accessories[Math.floor(Math.random()*accessories.length)];
-  // TODO: добавить аксессуар как отдельный слой поверх capy (ты нарисуешь)
-  
-  // Рандомный заказ
-  const options = ['matcha','tea','coffee','marshmallow','milk'];
-  const order = [];
-  const count = Math.floor(Math.random()*3)+1;
-  while(order.length<count){
-    const item = options[Math.floor(Math.random()*options.length)];
-    if(!order.includes(item)) order.push(item);
-  }
-  currentOrder = order;
-  orderBubble.innerHTML = order.map(i=>i).join(' + ');
-  client.classList.add('show');
+function showAchievement(name){
+  achievementsEl.textContent = `🏆 ${name}!`;
+  achievementsEl.style.display="block";
+  setTimeout(()=>achievementsEl.style.display="none", 3000);
 }
 
-document.querySelectorAll('.ingredient').forEach(elem=>{
-  elem.addEventListener('click',()=>{
-    const ing = elem.dataset.name;
-    cupIngredients.push(ing);
-    cup.style.backgroundImage = `url('cup_${cupIngredients.join('_')}.png')`;
-    history.push([...cupIngredients]);
-    historyRedo = [];
-  });
-});
+// === Initial UI ===
+updateUI();
 
-eatBtn.addEventListener('click',()=>{
-  cupIngredients = [];
-  cup.style.backgroundImage = `url('cup.png')`;
-});
-
-undoBtn.addEventListener('click',()=>{
-  if(history.length>1){
-    historyRedo.push(history.pop());
-    cupIngredients = history[history.length-1];
-    cup.style.backgroundImage = `url('cup_${cupIngredients.join('_')}.png')`;
-  }
-});
-
-redoBtn.addEventListener('click',()=>{
-  if(historyRedo.length>0){
-    const next = historyRedo.pop();
-    history.push(next);
-    cupIngredients = next;
-    cup.style.backgroundImage = `url('cup_'+cupIngredients.join('_')+'.png')`;
-  }
-});
-
-doneBtn.addEventListener('click',()=>{
-  let errors = 0;
-  currentOrder.forEach(item=>{
-    if(!cupIngredients.includes(item)) errors++;
-  });
-  cupIngredients.forEach(item=>{
-    if(!currentOrder.includes(item)) errors++;
-  });
-  
-  // Звезды
-  let stars = 1;
-  if(errors<=2) stars=5;
-  else if(errors<=3) stars=4;
-  else if(errors<=5) stars=3;
-  else if(errors<=8) stars=2;
-  else stars=1;
-  
-  starsCafe = Math.round((starsCafe + stars)/2); // среднее арифметическое
-  starsSpan.textContent = '✮'.repeat(starsCafe);
-  
-  // Деньги
-  let earned = 50; // можно по ингредиентам
-  money += earned;
-  moneySpan.textContent = `💰 ${money}`;
-  
-const generatedNames = new Set();
-
-// Функция генерации случайного имени
-function generateRandomName(gender) {
-    const consonants = 'bcdfghjklmnpqrstvwxyz';
-    const vowels = 'aeiou';
-    let name = '';
-    const length = Math.floor(Math.random() * 5) + 3; // 3-7 букв
-    for (let i = 0; i < length; i++) {
-        name += i % 2 === 0 ? consonants[Math.floor(Math.random() * consonants.length)] : vowels[Math.floor(Math.random() * vowels.length)];
-    }
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-    if (generatedNames.has(name)) return generateRandomName(gender);
-    generatedNames.add(name);
-    return name;
-}
-
-// Функция для текста отзыва по ошибкам и спец. случаям
-function generateReviewText(errorsList, specialType, language, drinkType, madeDrinkType) {
-    if (specialType === 'reload') {
-        return language === 'eng' ? 
-            "The barista wasn't on the kitchen, went away without warning." : 
-            "Бариста не было на кухне, куда-то ушёл не предупредив";
-    }
-    if (specialType === 'emptyCup') {
-        return language === 'eng' ? 
-            "The order wasn't fulfilled, sent an empty cup." : 
-            "Заказ не выполнили вовсе, дали пустую чашку без напитков. Не советую ходить в это кафе.";
-    }
-    if (specialType === 'wrongDrink') {
-        return language === 'eng' ? 
-            `It was tasty, although I ordered ${drinkType} instead of ${madeDrinkType}.` : 
-            `Было вкусно, хотя я заказывал${language==='ru' ? '' : 'a'} ${drinkType} вместо ${madeDrinkType}`;
-    }
-
-    // Генерация реалистичных комментариев для каждой ошибки
-    const commentsRu = {
-        "noSugar": "Не положили сахар",
-        "wrongIngredient": "Дали не тот ингредиент",
-        "tooSlow": "Делали слишком долго",
-        "extraIngredient": "Положили лишний ингредиент",
-        "missingIngredient": "Не положили ингредиент",
-        "wrongSequence": "Сделано в неправильной последовательности"
-    };
-    const commentsEng = {
-        "noSugar": "No sugar was added",
-        "wrongIngredient": "Wrong ingredient given",
-        "tooSlow": "Took too long to prepare",
-        "extraIngredient": "Added an extra ingredient",
-        "missingIngredient": "Ingredient missing",
-        "wrongSequence": "Prepared in the wrong order"
-    };
-
-    let texts = errorsList.map(err => language === 'eng' ? commentsEng[err] : commentsRu[err]);
-    return texts.join("; ");
-}
-
-// Подсчёт звезд
-function calculateStars(errorsCount, specialType) {
-    if (specialType === 'reload' || specialType === 'emptyCup') return 1;
-    if (specialType === 'wrongDrink') return 3;
-
-    if (errorsCount <= 2) return 5;
-    if (errorsCount === 3) return 4;
-    if (errorsCount <= 5) return 3;
-    if (errorsCount <= 8) return 2;
-    return 1;
-}
-
-// Добавление отзыва
-function addReview({errorsList=[], specialType=null, drinkType='', madeDrinkType='', gender='male'}) {
-    const name = generateRandomName(gender);
-    const stars = calculateStars(errorsList.length, specialType);
-    const text = generateReviewText(errorsList, specialType, language, drinkType, madeDrinkType);
-
-    reviews.push({name, stars, text});
-    saveProgress();
-    loadReviews();
-}
-
-// Примеры вызова
-// addReview({errorsList: ['noSugar','tooSlow'], gender: 'female'}); // две ошибки девочки
-// addReview({specialType: 'reload', gender: 'male'}); // перезагрузка страницы
-// addReview({specialType: 'emptyCup', gender: 'female'}); // пустая чашка
-// addReview({specialType: 'wrongDrink', drinkType:'tea', madeDrinkType:'coffee', gender:'male'}); // неправильный напиток
-
-  
-  // Очистка
-  cupIngredients = [];
-  cup.style.backgroundImage = `url('cup.png')`;
-  currentOrder = null;
-  history = [];
-  historyRedo = [];
-  
-  // Новая ачивка
-  achievementsCount++;
-  document.getElementById('achievements').textContent = `Achievements: ${achievementsCount}/10 clients`;
-  
-  generateClient();
-});
-
-reviewsBtn.addEventListener('click',()=>{ reviewsPanel.style.display='block'; });
-document.getElementById('closeReviews').addEventListener('click',()=>{ reviewsPanel.style.display='none'; });
-
-// Начальное состояние
-moneySpan.textContent = `💰 ${money}`;
-starsSpan.textContent = '✮'.repeat(starsCafe);
-loadReviews();
-generateClient();
 </script>
 </body>
 </html>
