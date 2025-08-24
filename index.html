@@ -6,296 +6,311 @@
 <title>Capy Café ☕</title>
 <style>
   body {
-    margin:0;
-    padding:0;
-    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     background: url('bg2.png') no-repeat center center fixed;
     background-size: cover;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     overflow: hidden;
   }
-  #topBar {
-    position: fixed;
-    top: 10px;
-    right: 20px;
+  .container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    z-index: 10;
-    font-size: 18px;
-    color: #fff;
-    text-shadow: 1px 1px 3px #000;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
   }
-  #balance { font-weight: bold; }
-  #stars { font-weight: bold; }
-  #clientArea {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-  #clientImg {
-    width: 120px; height: 120px;
-    background-color: #aaa;
-    border-radius: 50%;
-    display: inline-block;
-    margin-bottom: 10px;
-  }
-  #orderBubble {
-    display: inline-block;
-    padding: 10px 15px;
-    background: #fff;
-    border-radius: 15px;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-  .actionBtn {
-    width: 80px;
-    height: 80px;
-    margin: 0 10px;
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+  button {
+    border: none;
+    background: none;
     cursor: pointer;
+    padding: 0;
+    margin: 15px 0;
+    transition: transform 0.3s ease;
+  }
+  button:hover { transform: scale(1.05); }
+  #playBtn img, #settingsBtn img { width: 700px; height: auto; }
+  #settingsModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 800px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    background: url('bg1.png') no-repeat center center;
+    background-size: cover;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+    z-index: 100;
+  }
+  #settingsModal.show {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+  #overlay {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    display: none;
+    transition: opacity 0.3s ease;
+    z-index: 50;
+  }
+  #overlay.show { display: block; opacity: 1; }
+
+  .slider-container {
+    margin: 15px 0;
+  }
+  .slider-container label {
+    font-size: 18px;
+    margin-bottom: 5px;
+    display: block;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 12px;
+    background: #c4aa60;
+    border-radius: 6px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
     transition: transform 0.2s;
   }
-  .actionBtn:hover { transform: scale(1.1); }
-
-  #doorBtn {
-    position: absolute;
-    top: 50%;
-    right: 50px;
-    width: 150px;
-    height: 250px;
-    background-color: #bbb;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-
-  #overlay, #settingsModal, #achieveModal, #reviewsPanel {
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:100;
-  }
-
-  #overlay { background: rgba(0,0,0,0.5); }
-  #settingsModal, #achieveModal, #reviewsPanel {
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  input[type=range]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
     background: #fff;
-    border-radius: 20px;
-    padding: 30px;
-    width: 700px;
-    max-width: 90%;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
   }
+  input[type=range]::-moz-range-thumb:hover { transform: scale(1.2); }
 
-  #achieveModal img { width: 150px; display:block; margin: 0 auto 10px; }
-  #reviewsList { max-height: 300px; overflow-y: auto; margin-top: 10px; }
-  .reviewItem { border-bottom:1px solid #ccc; margin-bottom:5px; padding-bottom:5px; }
-  #closeReviews, #closeAchieve, #closeSettings { cursor:pointer; margin-top: 15px; padding: 8px 15px; border:none; border-radius:10px; background:#e0c097; transition:0.2s; }
-  #closeReviews:hover, #closeAchieve:hover, #closeSettings:hover { background:#d4ab7c; }
+  #fullscreenBtn, #languageBtn { width: 100px; height: 100px; margin: 10px; transition: transform 0.2s ease; }
+  #fullscreenBtn:hover, #languageBtn:hover { transform: scale(1.1); }
 
-  .slider-container { margin:15px 0; }
-  .slider-container label { display:block; font-size:16px; margin-bottom:5px; }
-  input[type=range] { width:100%; }
+  #closeSettings {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    background: #e0c097;
+    transition: background 0.2s ease;
+  }
+  #closeSettings:hover { background: #d4ab7c; }
+
+#loadingModal {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: rgba(0,0,0,0.5); /* полупрозрачный фон */
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.3s ease;
+  z-index:200;
+}
+#loadingModal.show { 
+  opacity:1; 
+  pointer-events:auto; 
+}
+#loadingModal img {
+  max-width: 80%;
+  max-height: 80%;
+}
 
 </style>
 </head>
 <body>
 
-<div id="topBar">
-  <div id="balance">💰 0$</div>
-  <div id="stars">⭐ 0</div>
-  <button id="reviewsBtn">💬</button>
-  <button id="settingsBtn">⚙️</button>
+<div class="container">
+  <button id="playBtn"><img src="PlayEng.png" alt="Play"></button>
+  <button id="settingsBtn"><img src="SettingsEng.png" alt="Settings"></button>
 </div>
 
-<div id="clientArea">
-  <div id="clientImg"></div>
-  <div id="orderBubble">---</div>
-  <div>
-    <img src="accept.png" class="actionBtn" id="acceptBtn">
-    <img src="decline.png" class="actionBtn" id="declineBtn">
-  </div>
-</div>
-
-<div id="doorBtn" title="Go to Kitchen"></div>
-
-<!-- Overlay -->
 <div id="overlay"></div>
 
-<!-- Settings Modal -->
 <div id="settingsModal">
-  <h3>Settings</h3>
   <div class="slider-container">
-    <label for="musicSlider">Music</label>
+    <label id="musicLabel" for="musicSlider">Music</label>
     <input type="range" id="musicSlider" min="0" max="100">
   </div>
   <div class="slider-container">
-    <label for="soundSlider">Sound</label>
+    <label id="soundLabel" for="soundSlider">Sound</label>
     <input type="range" id="soundSlider" min="0" max="100">
   </div>
-  <button id="closeSettings">Close</button>
+  <div style="display:flex; justify-content:center; margin-top:20px;">
+    <button id="fullscreenBtn"><img src="FullscreenEng.png" alt="Fullscreen"></button>
+    <button id="languageBtn"><img src="LanguageEng.png" alt="Language"></button>
+  </div>
+  <div style="text-align:center;">
+    <button id="closeSettings">Close</button>
+  </div>
 </div>
 
-<!-- Achieve Modal -->
-<div id="achieveModal">
-  <img src="" id="achieveImg" alt="Achieve">
-  <div id="achieveTitle"></div>
-  <button id="closeAchieve">Close</button>
-</div>
-
-<!-- Reviews Panel -->
-<div id="reviewsPanel">
-  <h3>Reviews</h3>
-  <div id="reviewsList"></div>
-  <button id="closeReviews">Close</button>
+<div id="loadingModal">
+  <img id="loadingImg" src="okno.png" alt="Loading">
 </div>
 
 <audio id="clickSound" src="click.wav"></audio>
+<audio id="closeSound" src="close.wav"></audio>
+<audio id="koverSound" src="kover.wav"></audio>
+<audio id="sh1Sound" src="sh1.wav"></audio>
+<audio id="musicSound" src="music.mp3" loop></audio>
+<audio id="loadingSound" src="loading.wav"></audio>
 
 <script>
-let balance = parseInt(localStorage.getItem("cafeBalance")) || 0;
-let totalStars = parseFloat(localStorage.getItem("cafeStars")) || 0;
-let ordersServed = parseInt(localStorage.getItem("ordersServed")) || 0;
+  // ===== LocalStorage defaults =====
+  if(localStorage.musicVolume===undefined) localStorage.musicVolume=85;
+  if(localStorage.soundVolume===undefined) localStorage.soundVolume=100;
+  if(localStorage.fullscreen===undefined) localStorage.fullscreen=false;
+  if(localStorage.language===undefined) localStorage.language="eng";
 
-const balanceEl = document.getElementById("balance");
-const starsEl = document.getElementById("stars");
-const clientImg = document.getElementById("clientImg");
-const orderBubble = document.getElementById("orderBubble");
-const acceptBtn = document.getElementById("acceptBtn");
-const declineBtn = document.getElementById("declineBtn");
-const doorBtn = document.getElementById("doorBtn");
+  // ===== Elements =====
+  const playBtn = document.getElementById('playBtn');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const overlay = document.getElementById('overlay');
+  const settingsModal = document.getElementById('settingsModal');
+  const closeSettings = document.getElementById('closeSettings');
+  const musicSlider = document.getElementById('musicSlider');
+  const soundSlider = document.getElementById('soundSlider');
+  const musicLabel = document.getElementById('musicLabel');
+  const soundLabel = document.getElementById('soundLabel');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const languageBtn = document.getElementById('languageBtn');
+  const loadingModal = document.getElementById('loadingModal');
+  const loadingImg = document.getElementById('loadingImg');
 
-const overlay = document.getElementById("overlay");
-const settingsModal = document.getElementById("settingsModal");
-const closeSettings = document.getElementById("closeSettings");
-const musicSlider = document.getElementById("musicSlider");
-const soundSlider = document.getElementById("soundSlider");
+  const clickSound = document.getElementById('clickSound');
+  const closeSound = document.getElementById('closeSound');
+  const koverSound = document.getElementById('koverSound');
+  const sh1Sound = document.getElementById('sh1Sound');
+  const musicSound = document.getElementById('musicSound');
+  const loadingSound = document.getElementById('loadingSound');
 
-const achieveModal = document.getElementById("achieveModal");
-const achieveImg = document.getElementById("achieveImg");
-const achieveTitle = document.getElementById("achieveTitle");
-const closeAchieve = document.getElementById("closeAchieve");
 
-const reviewsPanel = document.getElementById("reviewsPanel");
-const reviewsBtn = document.getElementById("reviewsBtn");
-const closeReviews = document.getElementById("closeReviews");
-const reviewsList = document.getElementById("reviewsList");
 
-const clickSound = document.getElementById("clickSound");
-
-// ===== Client Logic =====
-const drinks = ["матчу","чай","кофе"];
-const clients = ["Капи","Бубу","Мими","Тото","Нала"];
-let currentClient = null;
-let currentOrder = null;
-
-function randomClient(){
-  const name = clients[Math.floor(Math.random()*clients.length)];
-  const drink = drinks[Math.floor(Math.random()*drinks.length)];
-  currentClient = name;
-  currentOrder = drink;
-  clientImg.style.backgroundColor = "#"+Math.floor(Math.random()*16777215).toString(16);
-  orderBubble.textContent = drink;
-}
-randomClient();
-
-// ===== Update UI =====
-function updateUI(){
-  balanceEl.textContent = `💰 ${balance}$`;
-  starsEl.textContent = `⭐ ${totalStars.toFixed(1)}`;
-}
-
-// ===== Accept / Decline Orders =====
-acceptBtn.addEventListener("click",()=>{
-  clickSound.play();
-  // Move to kitchen.html to prepare order
-  localStorage.currentClient = currentClient;
-  localStorage.currentOrder = currentOrder;
-  window.location.href="kitchen.html";
-});
-
-declineBtn.addEventListener("click",()=>{
-  clickSound.play();
-  // Feedback comment
-  let comment = `Мій заказ не прийняли, сказали "ні"... А я просто хотіла ${currentOrder}!`;
-  let reviews = JSON.parse(localStorage.getItem("reviews")||"[]");
-  reviews.push({name:currentClient, stars:0, comment:comment});
-  localStorage.setItem("reviews",JSON.stringify(reviews));
-  randomClient();
-});
-
-// ===== Door to Kitchen =====
-doorBtn.addEventListener("click",()=>{
-  window.location.href="kitchen.html";
-});
-
-// ===== Settings =====
-function openSettings(){
-  overlay.style.display="flex";
-  settingsModal.style.display="flex";
-}
-function closeSettingsFunc(){
-  overlay.style.display="none";
-  settingsModal.style.display="none";
-}
-settingsBtn.addEventListener("click",openSettings);
-closeSettings.addEventListener("click",closeSettingsFunc);
-overlay.addEventListener("click",closeSettingsFunc);
-
-musicSlider.value = localStorage.musicVolume || 85;
-soundSlider.value = localStorage.soundVolume || 100;
-
-// ===== Achievements =====
-const achievements = {
-  "Первый шаг":{cond:()=>ordersServed>=1, reward:50},
-  "5 звёздочек!":{cond:()=>totalStars>=5, reward:100},
-  "10 клиентов":{cond:()=>ordersServed>=10, reward:200}
-  // Добавь остальные ачивки по аналогии
-};
-
-function checkAchievements(){
-  for(let key in achievements){
-    if(!localStorage.getItem("ach_"+key) && achievements[key].cond()){
-      balance += achievements[key].reward;
-      localStorage.setItem("cafeBalance",balance);
-      localStorage.setItem("ach_"+key,"done");
-      achieveImg.src="achieve_placeholder.png";
-      achieveTitle.textContent = key;
-      achieveModal.style.display="flex";
-      overlay.style.display="flex";
-      updateUI();
-    }
-  }
-}
-closeAchieve.addEventListener("click",()=>{
-  achieveModal.style.display="none";
-  overlay.style.display="none";
-});
-
-// ===== Reviews =====
-reviewsBtn.addEventListener("click",()=>{
-  reviewsPanel.style.display="flex";
-  overlay.style.display="flex";
-  const reviews = JSON.parse(localStorage.getItem("reviews")||"[]");
-  reviewsList.innerHTML="";
-  reviews.forEach(r=>{
-    const div = document.createElement("div");
-    div.classList.add("reviewItem");
-    div.innerHTML=`<strong>${r.name}</strong> - ${r.stars}⭐<br>${r.comment}`;
-    reviewsList.appendChild(div);
+// ===== Music autoplay =====
+window.addEventListener('load', () => {
+  musicSound.volume = localStorage.musicVolume / 100;
+  musicSound.play().catch(() => {
+    // Если автоплей заблокирован браузером, воспроизведение начнется после первого клика
+    document.body.addEventListener('click', () => musicSound.play(), {once: true});
   });
 });
-closeReviews.addEventListener("click",()=>{
-  reviewsPanel.style.display="none";
-  overlay.style.display="none";
-});
 
-// ===== Update UI on load =====
-updateUI();
-checkAchievements();
 
+
+
+  // ===== Initialize sliders =====
+  musicSlider.value = localStorage.musicVolume;
+  soundSlider.value = localStorage.soundVolume;
+  musicSound.volume = localStorage.musicVolume/100;
+  [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>s.volume=localStorage.soundVolume/100);
+
+  // ===== Language =====
+  const texts = {eng:{music:"Music",sound:"Sound",close:"Close"},ru:{music:"Музыка",sound:"Звук",close:"Закрыть"}};
+  function updateLanguage(){
+    if(localStorage.language==="eng"){
+      playBtn.querySelector('img').src="PlayEng.png";
+      settingsBtn.querySelector('img').src="SettingsEng.png";
+      fullscreenBtn.querySelector('img').src="FullscreenEng.png";
+      languageBtn.querySelector('img').src="LanguageEng.png";
+    } else {
+      playBtn.querySelector('img').src="PlayRu.png";
+      settingsBtn.querySelector('img').src="SettingsRu.png";
+      fullscreenBtn.querySelector('img').src="FullscreenRu.png";
+      languageBtn.querySelector('img').src="LanguageRu.png";
+    }
+    musicLabel.textContent = texts[localStorage.language].music;
+    soundLabel.textContent = texts[localStorage.language].sound;
+    closeSettings.textContent = texts[localStorage.language].close;
+  }
+  updateLanguage();
+
+  // ===== Settings open/close =====
+  function openSettings(){clickSound.play(); settingsModal.classList.add('show'); overlay.classList.add('show');}
+  function closeSettingsFunc(){closeSound.play(); settingsModal.classList.remove('show'); overlay.classList.remove('show');}
+  settingsBtn.addEventListener('click', openSettings);
+  closeSettings.addEventListener('click', closeSettingsFunc);
+  overlay.addEventListener('click', closeSettingsFunc);
+
+  // ===== Sliders =====
+  musicSlider.addEventListener('input', ()=>{
+    localStorage.musicVolume = musicSlider.value;
+    musicSound.volume = musicSlider.value/100;
+    koverSound.volume = soundSlider.value/100;
+    koverSound.play();
+  });
+  soundSlider.addEventListener('input', ()=>{
+    localStorage.soundVolume = soundSlider.value;
+    [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>s.volume=soundSlider.value/100);
+    koverSound.play();
+  });
+
+  // ===== Fullscreen =====
+  fullscreenBtn.addEventListener('click', ()=>{
+    clickSound.play();
+    if(!document.fullscreenElement){document.documentElement.requestFullscreen(); localStorage.fullscreen=true;}
+    else{document.exitFullscreen(); localStorage.fullscreen=false;}
+  });
+
+  // ===== Language button =====
+  languageBtn.addEventListener('click', ()=>{
+    clickSound.play();
+    localStorage.language = (localStorage.language==="eng")?"ru":"eng";
+    updateLanguage();
+  });
+
+  // ===== Music autoplay =====
+  musicSound.play().catch(()=>{});
+
+  // ===== Play button with mini-loading =====
+  playBtn.addEventListener('click', ()=>{
+    sh1Sound.play();
+    musicSound.pause();
+    loadingModal.classList.add('show');
+    loadingSound.volume = localStorage.musicVolume/100;
+    loadingSound.play();
+
+    let toggle = true;
+    const interval = setInterval(()=>{
+      loadingImg.src = toggle?"okno2.png":"okno.png";
+      toggle=!toggle;
+    },1000);
+
+    loadingSound.onended = ()=>{
+      clearInterval(interval);
+      window.location.href = "cafe.html";
+    };
+  });
 </script>
 
 </body>
