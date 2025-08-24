@@ -6,250 +6,300 @@
 <title>Capy Café ☕</title>
 <style>
   body {
-    margin:0; padding:0;
+    margin:0;
+    padding:0;
     font-family: Arial, sans-serif;
-    background: #f5f1e6;
+    background: url('bg2.png') no-repeat center center fixed;
+    background-size: cover;
     overflow: hidden;
   }
-  #topbar {
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:60px;
-    background:#c4aa60;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 20px;
+  #header {
+    position: absolute;
+    top:10px;
+    left:10px;
+    right:10px;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    color:white;
+    font-size:18px;
+    text-shadow: 1px 1px 4px black;
     z-index:10;
   }
-  #topbar div {display:flex; align-items:center;}
-  #topbar button {margin-left:10px; cursor:pointer; padding:5px;}
-  #money, #stars {font-weight:bold; font-size:18px; margin-left:10px;}
-  #commentsBtn {font-size:24px; cursor:pointer; margin-left:15px;}
-
-  #cafe-container {
-    position:relative;
-    width:100%; height:100vh;
-    display:flex; justify-content:center; align-items:center;
-  }
-
-  #door {
-    width:150px; height:250px;
-    background:#8B4513;
-    cursor:pointer;
-    display:flex; justify-content:center; align-items:center;
-    color:white; font-weight:bold;
-    position:absolute; right:50px; top:50%;
-    transform:translateY(-50%);
-  }
-
-  .client {
+  #clients {
     position:absolute;
-    width:100px; height:150px;
-    background:#ffd700;
-    border-radius:50% 50% 20% 20%;
-    display:flex; justify-content:center; align-items:flex-start;
-    flex-direction:column;
-    text-align:center;
+    bottom:10px;
+    left:10px;
+    display:flex;
+    gap:15px;
+  }
+  .client {
+    width:100px;
+    height:120px;
+    background:#ccc;
+    border-radius:15px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content:flex-end;
+    cursor:pointer;
+    position:relative;
+  }
+  .client-name {
+    font-size:14px;
+    color:black;
+    margin-bottom:5px;
+  }
+  #orderBubble {
+    position:absolute;
+    bottom:130px;
+    left:0;
+    opacity:0;
+    background:white;
+    padding:5px 10px;
+    border-radius:10px;
+    border:1px solid black;
+    font-size:14px;
+    pointer-events:none;
+    transition: all 0.5s ease;
+  }
+  #door {
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    width:150px;
+    height:250px;
+    background:#8B4513;
+    border:3px solid black;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  #acceptBtn, #declineBtn {
+    width:80px;
+    height:40px;
+    margin:5px;
+    cursor:pointer;
     font-weight:bold;
   }
-
-  .bubble {
+  #buttons {
     position:absolute;
-    bottom:160px;
+    bottom:10px;
+    right:10px;
+    display:flex;
+    flex-direction: column;
+    gap:5px;
+  }
+  #reviewsBtn {
+    position:absolute;
+    top:50px;
+    right:10px;
+    cursor:pointer;
+    font-size:24px;
+  }
+  #reviewsPanel {
+    position:absolute;
+    top:80px;
+    right:10px;
+    width:300px;
+    max-height:400px;
+    background:rgba(255,255,255,0.9);
+    border:1px solid black;
+    overflow-y:auto;
+    display:none;
+    padding:10px;
+    z-index:20;
+  }
+  .review {
+    border-bottom:1px solid #888;
+    padding:5px 0;
+    font-size:14px;
+  }
+  #achievementsPanel {
+    position:absolute;
+    top:10px;
     left:50%;
     transform:translateX(-50%);
-    padding:5px 10px;
-    background:white;
-    border-radius:10px;
-    font-size:14px;
-    animation:appear 0.5s forwards;
+    background:rgba(255,255,255,0.9);
+    border:1px solid black;
+    padding:10px;
+    display:none;
+    z-index:20;
   }
-  @keyframes appear {from{opacity:0; transform:translateX(-50%) translateY(10px);} to{opacity:1; transform:translateX(-50%) translateY(0);}}
-
-  #orderPanel {
-    position:fixed; bottom:20px; right:20px;
-    background:#fff8dc; padding:10px;
-    border-radius:10px; box-shadow:0 0 5px rgba(0,0,0,0.3);
-  }
-  #orderText {font-weight:bold;}
-  #orderButtons button {margin:5px; cursor:pointer; padding:5px 10px;}
-
-  #achievements {
-    position:fixed; top:80px; right:20px;
-    background:#fffae6; padding:10px; border-radius:10px;
-    max-width:200px; font-size:14px; display:none;
-  }
-
-  #commentsModal {
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%, -50%);
-    background:white; padding:20px;
-    border-radius:15px; box-shadow:0 0 10px rgba(0,0,0,0.4);
-    display:none; z-index:20;
-    max-height:70vh; overflow-y:auto;
-  }
-  #commentsModal h3 {margin-top:0;}
-  #commentsModal button {margin-top:10px;}
 </style>
 </head>
 <body>
 
-<div id="topbar">
-  <div>
-    💰 <span id="money">0</span>
-    ✮ <span id="stars">1</span>
-  </div>
-  <div>
-    <button id="commentsBtn">💬</button>
-    <button id="settingsBtn">⚙</button>
-  </div>
+<div id="header">
+  <div id="balance">💰 $0</div>
+  <div id="stars">⭐ 0</div>
 </div>
 
-<div id="cafe-container">
-  <div id="door">Door</div>
+<div id="clients"></div>
+
+<div id="orderBubble"></div>
+
+<div id="door" title="Go to kitchen"></div>
+
+<div id="buttons">
+  <button id="acceptBtn">✅ Accept</button>
+  <button id="declineBtn">❌ Decline</button>
 </div>
 
-<div id="orderPanel">
-  <div id="orderText">No order</div>
-  <div id="orderButtons">
-    <button id="acceptBtn">Accept</button>
-    <button id="declineBtn">Decline</button>
-  </div>
-</div>
+<div id="reviewsBtn">💬</div>
+<div id="reviewsPanel"></div>
 
-<div id="achievements"></div>
-
-<div id="commentsModal">
-  <h3>Comments</h3>
-  <div id="commentsList"></div>
-  <button id="closeComments">Close</button>
-</div>
+<div id="achievementsPanel"></div>
 
 <script>
-let money = Number(localStorage.getItem("money")||0);
-let stars = Number(localStorage.getItem("stars")||1);
-let clientsServed = Number(localStorage.getItem("clientsServed")||0);
-let achievementsUnlocked = JSON.parse(localStorage.getItem("achievementsUnlocked")||"[]");
+  // ===== LocalStorage defaults =====
+  if(!localStorage.balance) localStorage.balance=0;
+  if(!localStorage.totalStars) localStorage.totalStars=0;
+  if(!localStorage.totalClients) localStorage.totalClients=0;
+  if(!localStorage.achievements) localStorage.achievements=JSON.stringify([]);
+  if(!localStorage.reviews) localStorage.reviews=JSON.stringify([]);
+  
+  // ===== Clients =====
+  const clientNames = ['Рэнди','Руди','Клара','Том','Сара','Макс','Лиза','Нико'];
+  const accessories = ['hat','dress','jacket','jewelry'];
+  const drinks = ['Matcha','Tea','Coffee','Donut','Gingerbread'];
 
-const moneyEl = document.getElementById("money");
-const starsEl = document.getElementById("stars");
-const cafeContainer = document.getElementById("cafe-container");
-const door = document.getElementById("door");
-const orderText = document.getElementById("orderText");
-const acceptBtn = document.getElementById("acceptBtn");
-const declineBtn = document.getElementById("declineBtn");
-const achievementsEl = document.getElementById("achievements");
-const commentsModal = document.getElementById("commentsModal");
-const commentsList = document.getElementById("commentsList");
-const commentsBtn = document.getElementById("commentsBtn");
-const closeComments = document.getElementById("closeComments");
+  let currentClient = null;
 
-// === Clients logic ===
-const orders = ["Matcha", "Tea", "Coffee"];
-let currentClient = null;
+  const clientsDiv = document.getElementById('clients');
+  const orderBubble = document.getElementById('orderBubble');
+  const acceptBtn = document.getElementById('acceptBtn');
+  const declineBtn = document.getElementById('declineBtn');
+  const door = document.getElementById('door');
+  const balanceDiv = document.getElementById('balance');
+  const starsDiv = document.getElementById('stars');
+  const reviewsBtn = document.getElementById('reviewsBtn');
+  const reviewsPanel = document.getElementById('reviewsPanel');
+  const achievementsPanel = document.getElementById('achievementsPanel');
 
-function generateRandomName() {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let name = letters[Math.floor(Math.random()*letters.length)];
-  name += letters[Math.floor(Math.random()*letters.length)];
-  return name;
-}
+  function randomName(){ return clientNames[Math.floor(Math.random()*clientNames.length)]; }
+  function randomAccessory(){ return accessories[Math.floor(Math.random()*accessories.length)]; }
+  function randomDrink(){ return drinks[Math.floor(Math.random()*drinks.length)]; }
 
-function createClient() {
-  if(currentClient) currentClient.remove();
-  const client = document.createElement("div");
-  client.classList.add("client");
-  const name = generateRandomName();
-  client.dataset.name = name;
-  client.innerHTML = `<div>${name}</div><div class="bubble">${orders[Math.floor(Math.random()*orders.length)]}</div>`;
-  client.style.left = (Math.random()*50+10)+"%";
-  client.style.top = (Math.random()*40+40)+"%";
-  cafeContainer.appendChild(client);
-  currentClient = client;
-}
+  function createClient(){
+    const div = document.createElement('div');
+    div.className = 'client';
+    const name = randomName();
+    const accessory = randomAccessory();
+    const drink = randomDrink();
+    div.dataset.name=name;
+    div.dataset.accessory=accessory;
+    div.dataset.drink=drink;
+    const nameDiv = document.createElement('div');
+    nameDiv.className='client-name';
+    nameDiv.innerText=name;
+    div.appendChild(nameDiv);
+    clientsDiv.appendChild(div);
 
-door.addEventListener("click", ()=> {
-  createClient();
-  // show order panel
-  orderText.textContent = currentClient.querySelector(".bubble").textContent;
-});
+    div.addEventListener('click', ()=>{
+      currentClient = div.dataset;
+      showOrderBubble(div);
+    });
+  }
 
-// === Accept / Decline ===
-acceptBtn.addEventListener("click", ()=>{
-  if(!currentClient) return;
-  money += 50;
-  clientsServed += 1;
-  // stars logic
-  stars = Math.min(5, stars+1); // упрощенно
-  updateUI();
-  unlockAchievements();
-  currentClient.remove();
-  currentClient = null;
-  orderText.textContent = "No order";
-});
+  function showOrderBubble(clientDiv){
+    orderBubble.innerText = clientDiv.dataset.drink;
+    const rect = clientDiv.getBoundingClientRect();
+    orderBubble.style.left=rect.left + 'px';
+    orderBubble.style.bottom=(window.innerHeight - rect.top + 50)+'px';
+    orderBubble.style.opacity=1;
+  }
 
-declineBtn.addEventListener("click", ()=>{
-  if(!currentClient) return;
-  stars = Math.max(1, stars-1);
-  updateUI();
-  addComment(`${currentClient.dataset.name} ✮ 1 - не приняли заказ`);
-  currentClient.remove();
-  currentClient = null;
-  orderText.textContent = "No order";
-});
+  for(let i=0;i<3;i++) createClient();
 
-function updateUI(){
-  moneyEl.textContent = money;
-  starsEl.textContent = stars;
-  localStorage.setItem("money", money);
-  localStorage.setItem("stars", stars);
-  localStorage.setItem("clientsServed", clientsServed);
-}
-
-function addComment(text){
-  let comments = JSON.parse(localStorage.getItem("comments")||"[]");
-  comments.push(text);
-  localStorage.setItem("comments", JSON.stringify(comments));
-}
-
-commentsBtn.addEventListener("click", ()=>{
-  commentsList.innerHTML = "";
-  let comments = JSON.parse(localStorage.getItem("comments")||"[]");
-  comments.forEach(c=>{
-    const div = document.createElement("div");
-    div.textContent = c;
-    commentsList.appendChild(div);
+  // ===== Accept / Decline =====
+  acceptBtn.addEventListener('click', ()=>{
+    if(!currentClient) return;
+    // Save current order to localStorage for kitchen
+    localStorage.currentOrder = JSON.stringify(currentClient);
+    alert('Go to kitchen to prepare this order!');
   });
-  commentsModal.style.display = "block";
-});
-closeComments.addEventListener("click", ()=>commentsModal.style.display="none");
 
-// === Achievements ===
-const allAchievements = [
-  {name:"First Step", condition:()=>clientsServed>=1, reward:50},
-  {name:"5 Stars!", condition:()=>stars===5, reward:100},
-  {name:"10 Clients", condition:()=>clientsServed>=10, reward:200},
-];
-
-function unlockAchievements(){
-  allAchievements.forEach(a=>{
-    if(a.condition() && !achievementsUnlocked.includes(a.name)){
-      achievementsUnlocked.push(a.name);
-      localStorage.setItem("achievementsUnlocked", JSON.stringify(achievementsUnlocked));
-      money += a.reward;
-      showAchievement(a.name);
-      updateUI();
-    }
+  declineBtn.addEventListener('click', ()=>{
+    if(!currentClient) return;
+    const reviews = JSON.parse(localStorage.reviews);
+    reviews.push({name:currentClient.name,stars:1,comment:"Не приняли заказ, денег нет"});
+    localStorage.reviews = JSON.stringify(reviews);
+    localStorage.totalStars = parseInt(localStorage.totalStars)+1; // упрощенно
+    updateUI();
+    alert('Order declined. 1 star added.');
   });
-}
 
-function showAchievement(name){
-  achievementsEl.textContent = `🏆 ${name}!`;
-  achievementsEl.style.display="block";
-  setTimeout(()=>achievementsEl.style.display="none", 3000);
-}
+  function updateUI(){
+    balanceDiv.innerText='💰 $'+localStorage.balance;
+    starsDiv.innerText='⭐ '+localStorage.totalStars;
+  }
 
-// === Initial UI ===
-updateUI();
+  updateUI();
+
+  // ===== Door to kitchen =====
+  door.addEventListener('click', ()=>{
+    if(localStorage.currentOrder) window.location.href='kitchen.html';
+    else alert('Accept an order first!');
+  });
+
+  // ===== Reviews panel =====
+  reviewsBtn.addEventListener('click', ()=>{
+    const reviews = JSON.parse(localStorage.reviews);
+    reviewsPanel.innerHTML='';
+    reviewsPanel.style.display = reviewsPanel.style.display==='none'?'block':'none';
+    reviews.forEach(r=>{
+      const div = document.createElement('div');
+      div.className='review';
+      div.innerHTML=`<b>${r.name}</b> ${'✮'.repeat(r.stars)}<br>${r.comment}`;
+      reviewsPanel.appendChild(div);
+    });
+  });
+
+  // ===== Achievements =====
+  const achievementsList = [
+    {name:'First Step',desc:'Complete first order',money:50},
+    {name:'5 Stars!',desc:'Get perfect review',money:100},
+    {name:'10 Clients',desc:'Serve 10 clients',money:200},
+    {name:'100 Clients',desc:'Serve 100 clients',money:2000},
+    {name:'Experimenter',desc:'Add 7+ ingredients',money:150},
+    {name:'Empty Cup',desc:'Give empty cup',money:50},
+    {name:'Unhappy Client',desc:'Fail 5 orders',money:200},
+    {name:'Speedy Barista',desc:'Finish order <10s',money:300},
+    {name:'Meditative Kettle',desc:'Boil water 5 times',money:100},
+    {name:'Eat Everything',desc:'Use eat 20 times',money:100},
+    {name:'Taster',desc:'Try all ingredients',money:400},
+    {name:'Perfect Choice',desc:'Accept all orders 10 times',money:300},
+    {name:'Picky',desc:'Decline 10 times',money:150},
+    // secret
+    {name:'Night Barista',desc:'Enter after midnight',money:250,secret:true},
+    {name:'Double Boil',desc:'Boil again',money:150,secret:true},
+    {name:'Barista Mischief',desc:'>20 marshmallows',money:500,secret:true},
+    {name:'Capy in Hat',desc:'Serve client with hat perfectly',money:350,secret:true},
+    {name:'Merciless',desc:'Kick 5 clients',money:200,secret:true},
+  ];
+
+  function checkAchievements(){
+    const unlocked = JSON.parse(localStorage.achievements);
+    achievementsList.forEach(a=>{
+      if(!unlocked.includes(a.name)){
+        // Simplified check, just unlock first step when first order exists
+        if(a.name==='First Step' && localStorage.currentOrder){
+          unlocked.push(a.name);
+          localStorage.achievements = JSON.stringify(unlocked);
+          showAchievement(a);
+        }
+      }
+    });
+  }
+
+  function showAchievement(a){
+    achievementsPanel.innerHTML=`🌟 ${a.name} - ${a.desc} (+$${a.money})`;
+    achievementsPanel.style.display='block';
+    setTimeout(()=>{achievementsPanel.style.display='none';},4000);
+  }
+
+  checkAchievements();
 
 </script>
 </body>
