@@ -1,305 +1,487 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capy Café ☕</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Capy Café — cafe.html (заглушки)</title>
 <style>
-  body {
-    margin:0;
-    padding:0;
-    font-family: Arial, sans-serif;
-    background: url('bg2.png') no-repeat center center fixed;
-    background-size: cover;
-    overflow: hidden;
+  /* ============================== */
+  /*  Capy Café — cafe.html (заглушки) */
+  /*  ВЕРСИЯ: Полная страница кафе (без кухни) */
+  /*  Все изображения — заглушки (цветные блоки, тексты) */
+  /* ============================== */
+
+  :root{
+    --scene-w:1200px;
+    --scene-h:800px;
+    --accent:#c79b5c;
+    --panel-bg: rgba(255,255,255,0.9);
   }
-  #header {
-    position: absolute;
-    top:10px;
-    left:10px;
-    right:10px;
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    color:white;
-    font-size:18px;
-    text-shadow: 1px 1px 4px black;
-    z-index:10;
+  html,body{height:100%;}
+  body{
+    margin:0;padding:0;display:flex;align-items:center;justify-content:center;background:#efe6d8;font-family:Inter, Arial, sans-serif;color:#222;
   }
-  #clients {
-    position:absolute;
-    bottom:10px;
-    left:10px;
-    display:flex;
-    gap:15px;
+
+  /* Основная сцена */
+  #scene{
+    width:var(--scene-w);height:var(--scene-h);position:relative;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.15);background:linear-gradient(180deg,#fffaf5 0%, #fff1e6 100%);
   }
-  .client {
-    width:100px;
-    height:120px;
-    background:#ccc;
-    border-radius:15px;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content:flex-end;
-    cursor:pointer;
-    position:relative;
-  }
-  .client-name {
-    font-size:14px;
-    color:black;
-    margin-bottom:5px;
-  }
-  #orderBubble {
-    position:absolute;
-    bottom:130px;
-    left:0;
-    opacity:0;
-    background:white;
-    padding:5px 10px;
-    border-radius:10px;
-    border:1px solid black;
-    font-size:14px;
-    pointer-events:none;
-    transition: all 0.5s ease;
-  }
-  #door {
-    position:absolute;
-    right:10px;
-    top:50%;
-    transform:translateY(-50%);
-    width:150px;
-    height:250px;
-    background:#8B4513;
-    border:3px solid black;
-    border-radius:10px;
-    cursor:pointer;
-  }
-  #acceptBtn, #declineBtn {
-    width:80px;
-    height:40px;
-    margin:5px;
-    cursor:pointer;
-    font-weight:bold;
-  }
-  #buttons {
-    position:absolute;
-    bottom:10px;
-    right:10px;
-    display:flex;
-    flex-direction: column;
-    gap:5px;
-  }
-  #reviewsBtn {
-    position:absolute;
-    top:50px;
-    right:10px;
-    cursor:pointer;
-    font-size:24px;
-  }
-  #reviewsPanel {
-    position:absolute;
-    top:80px;
-    right:10px;
-    width:300px;
-    max-height:400px;
-    background:rgba(255,255,255,0.9);
-    border:1px solid black;
-    overflow-y:auto;
-    display:none;
-    padding:10px;
-    z-index:20;
-  }
-  .review {
-    border-bottom:1px solid #888;
-    padding:5px 0;
-    font-size:14px;
-  }
-  #achievementsPanel {
-    position:absolute;
-    top:10px;
-    left:50%;
-    transform:translateX(-50%);
-    background:rgba(255,255,255,0.9);
-    border:1px solid black;
-    padding:10px;
-    display:none;
-    z-index:20;
-  }
+
+  /* Верхняя панель: деньги, звезды, кнопки */
+  header{position:absolute;left:24px;right:24px;top:14px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+  .left-hud,.right-hud{display:flex;gap:12px;align-items:center;pointer-events:auto}
+  .hud-box{background:var(--panel-bg);padding:8px 12px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06);display:flex;align-items:center;gap:10px}
+  .digits{display:flex;gap:4px;align-items:center}
+  .digit{width:28px;height:38px;background:#f6e7cf;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .hud-label{font-size:14px;color:#6b4f33}
+
+  /* Иконки справа */
+  .icon-btn{width:52px;height:52px;border-radius:10px;background:var(--panel-bg);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+  .icon-btn img{width:28px;height:28px}
+
+  /* Клиент (центральная часть справа от двери) */
+  .room{position:absolute;left:24px;right:24px;top:80px;bottom:120px;display:flex;align-items:flex-end;justify-content:flex-start;padding:18px}
+  .door-slot{width:360px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+  .door{width:120px;height:180px;border-radius:12px;background:linear-gradient(180deg,#d9b48a,#cea06b);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,0.12)}
+  .door.disabled{opacity:0.6}
+  .client-area{flex:1;display:flex;align-items:end;justify-content:flex-start;padding-left:40px}
+  .client-card{width:140px;height:180px;border-radius:12px;background:#fff6ee;border:3px dashed rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;font-size:48px;color:#c07a3b;transform:translateX(-400px);opacity:0}
+  .client-card.arrive{animation:client-in 1s forwards}
+  .client-card.leave{animation:client-out 0.8s forwards}
+  @keyframes client-in{from{transform:translateX(-420px);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes client-out{from{transform:translateX(0);opacity:1}to{transform:translateX(-420px);opacity:0}}
+
+  /* Облачко заказа (только название напитка) */
+  .order-bubble{position:absolute;top:40%;left:50%;transform:translateX(-50%);min-width:220px;padding:12px 18px;border-radius:30px;background:var(--panel-bg);box-shadow:0 12px 30px rgba(0,0,0,0.08);text-align:center;font-weight:700;color:#6b4f33}
+
+  /* Нижняя панель: кнопки принятия/отказа и подсказки */
+  footer{position:absolute;left:24px;right:24px;bottom:18px;display:flex;justify-content:space-between;align-items:center}
+  .decision{display:flex;gap:18px}
+  .big-btn{width:86px;height:86px;border-radius:16px;background:#fff;border:2px solid rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 30px rgba(0,0,0,0.08);transition:transform .12s ease, box-shadow .12s ease}
+.big-btn:active{transform:scale(0.96)}
+.pulse{animation:pulse 0.9s ease}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+  .big-btn img{width:48px;height:48px}
+
+  .status-note{background:var(--panel-bg);padding:10px 14px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+
+  /* Модалки */
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center}
+  .overlay.show{display:flex}
+  .modal{width:820px;max-height:80%;background:url('comment.png') center/cover no-repeat;border-radius:18px;padding:26px;overflow:auto}
+  #settingsModal{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);width:800px;padding:40px;border-radius:20px;box-shadow:0 0 20px rgba(0,0,0,0.3);background:url('bg1.png') no-repeat center center;background-size:cover;opacity:0;pointer-events:none;transition:all 0.4s ease;z-index:100}
+  #settingsModal.show{opacity:1;transform:translate(-50%,-50%);pointer-events:auto}
+  #overlay.show{display:flex;opacity:1}
+  #loadingModal{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s ease;z-index:200}
+  #loadingModal.show{opacity:1;pointer-events:auto}
+  #loadingModal img{max-width:80%;max-height:80%} 
+  .review-item{background:rgba(255,255,255,0.95);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+  .review-name{font-weight:700}
+  .review-text{margin-top:8px;line-height:1.35}
+
+  /* Ачивки */
+  .achive-panel{position:absolute;right:24px;top:120px;width:220px;background:var(--panel-bg);border-radius:12px;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06);display:none;opacity:0;transform:translateY(-8px);transition:opacity .25s ease, transform .25s ease;} .achive-panel.show{display:block;opacity:1;transform:translateY(0);} 
+  .ach-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;margin-bottom:8px;background:#fff}
+
+  /* Уведомление о новом отзыве */
+  .msg-note{position:absolute;top:-140px;left:50%;transform:translateX(-50%);width:520px;height:120px;border-radius:14px;background:rgba(255,255,255,0.98);display:flex;align-items:center;justify-content:center;box-shadow:0 18px 40px rgba(0,0,0,0.12);cursor:pointer;transition:transform .6s ease}
+  .msg-note.show{transform:translate(-50%,140px)}
+
+  /* Подписи и мелочь */
+  .muted{color:#7a6b5a;font-size:13px}
+  .big{font-size:18px;font-weight:700;color:#3c2b1a}
+
+  /* адаптив / мелкие элементы */
+  @media(max-width:1240px){:root{--scene-w:1000px;--scene-h:700px}}
 </style>
 </head>
 <body>
 
-<div id="header">
-  <div id="balance">💰 $0</div>
-  <div id="stars">⭐ 0</div>
+<div id="scene" role="application" aria-label="Capy Café — кафе">
+  <header>
+    <div class="left-hud">
+      <div class="hud-box">
+        <div class="hud-label" id="potentialLabel">Заработок</div>
+        <div id="potentialDigits" class="digits"><div class="digit">0</div></div>
+      </div>
+    </div>
+
+    <div class="right-hud">
+      <div class="hud-box">
+        <div class="hud-label" id="balanceLabel">Баланс</div>
+        <div id="balanceDigits" class="digits"><div class="digit">0</div></div>
+      </div>
+
+      <div class="hud-box">
+        <div class="hud-label" id="ratingLabel">Рейтинг</div>
+        <div id="starsDisplay" class="big">1.0 ✮</div>
+      </div>
+
+      <div class="icon-btn" id="achBtn" title="Ачивки" aria-label="Ачивки" role="button">🏆</div>
+      <div class="icon-btn" id="reviewsBtn" title="Отзывы" aria-label="Отзывы" role="button">💬</div>
+      <div class="icon-btn" id="settingsBtn" title="Настройки" aria-label="Настройки" role="button"><img src="SettingsEng.png" alt="Settings" style="width:28px;height:28px"></div>
+    </div>
+  </header>
+
+  <div class="room">
+    <div class="door-slot">
+      <div id="door" class="door" title="Кухня — перейти" role="button">ДВЕРЬ</div>
+      <div style="margin-top:8px;" class="muted">Перейти на кухню</div>
+    </div>
+
+    <div class="client-area">
+      <!-- Клиент — заглушка: один блок с буквой "К" -->
+      <div id="clientCard" class="client-card" aria-live="polite">К</div>
+    </div>
+  </div>
+
+  <!-- Облачко заказа — только общее название напитка -->
+  <div id="orderBubble" class="order-bubble">—</div>
+
+  <footer>
+    <div class="decision">
+      <div id="acceptBtn" class="big-btn" title="Принять заказ" role="button">✅</div>
+      <div id="declineBtn" class="big-btn" title="Отклонить" role="button">❌</div>
+    </div>
+
+    
+  </footer>
+
+  <!-- уведомление о новом отзыве -->
+  <div id="msgNote" class="msg-note">У вас новое сообщение — отзыв (клик, чтобы посмотреть)</div>
+
+  <!-- панель ачивок -->
+  <aside class="achive-panel" aria-hidden="false">
+    <div class="big">Ачивки</div>
+    <div id="achList">
+      <!-- наполняется динамически -->
+    </div>
+  </aside>
+
+  <!-- модалки -->
+  <div id="overlay" class="overlay" role="dialog" aria-hidden="true">
+    <div id="reviewsModal" class="modal" role="document" aria-label="Отзывы" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="big">Отзывы</div>
+        <button id="closeReviews" aria-label="Закрыть">✕</button>
+      </div>
+      <div id="reviewsList"></div>
+    </div>
+
+    <div id="achModal" class="modal" role="document" aria-label="Ачивки" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="big">Ачивки</div>
+        <button id="closeAch" aria-label="Закрыть">✕</button>
+      </div>
+      <div id="achModalList"></div>
+    </div>
+
+    <div id="settingsModal" class="modal" role="document" aria-label="Настройки" style="display:none">
+      <div class="slider-container">
+        <label id="musicLabel" for="musicSlider">Music</label>
+        <input type="range" id="musicSlider" min="0" max="100">
+      </div>
+      <div class="slider-container">
+        <label id="soundLabel" for="soundSlider">Sound</label>
+        <input type="range" id="soundSlider" min="0" max="100">
+      </div>
+      <div style="display:flex; justify-content:center; margin-top:20px; gap:12px;">
+        <button id="fullscreenBtn"><img src="FullscreenEng.png" alt="Fullscreen" style="width:48px;height:48px"></button>
+        <button id="languageBtn"><img src="LanguageEng.png" alt="Language" style="width:48px;height:48px"></button>
+      </div>
+      <div style="text-align:center; margin-top:12px;">
+        <button id="closeSettings">Close</button>
+      </div>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- скрытое аудио -->
+  <audio id="clickSound" src="click.wav"></audio>
+  <audio id="closeSound" src="close.wav"></audio>
+  <audio id="koverSound" src="kover.wav"></audio>
+  <audio id="sh1Sound" src="sh1.wav"></audio>
+  <audio id="loadingSound" src="loading.wav"></audio>
+  <audio id="musicAudio" src="music4game.mp3" loop></audio> 
+  
 </div>
-
-<div id="clients"></div>
-
-<div id="orderBubble"></div>
-
-<div id="door" title="Go to kitchen"></div>
-
-<div id="buttons">
-  <button id="acceptBtn">✅ Accept</button>
-  <button id="declineBtn">❌ Decline</button>
-</div>
-
-<div id="reviewsBtn">💬</div>
-<div id="reviewsPanel"></div>
-
-<div id="achievementsPanel"></div>
 
 <script>
-  // ===== LocalStorage defaults =====
-  if(!localStorage.balance) localStorage.balance=0;
-  if(!localStorage.totalStars) localStorage.totalStars=0;
-  if(!localStorage.totalClients) localStorage.totalClients=0;
-  if(!localStorage.achievements) localStorage.achievements=JSON.stringify([]);
-  if(!localStorage.reviews) localStorage.reviews=JSON.stringify([]);
-  
-  // ===== Clients =====
-  const clientNames = ['Рэнди','Руди','Клара','Том','Сара','Макс','Лиза','Нико'];
-  const accessories = ['hat','dress','jacket','jewelry'];
-  const drinks = ['Matcha','Tea','Coffee','Donut','Gingerbread'];
+/* ==========================================================
+   Полный функционал cafe.html (заглушки визуалов)
+   - Клиенты (1 одновременно)
+   - Принять / отклонить заказ
+   - Отзывы (localStorage)
+   - Ачивки (progress в localStorage)
+   - Музыка/настройки (синхронизация с index.html через localStorage)
+   - Дверь — всегда ведёт на kitchen.html
+   - Все графические элементы — заглушки
+   ========================================================== */
 
-  let currentClient = null;
+// ---- LocalStorage defaults ----
+if(localStorage.musicVolume===undefined) localStorage.musicVolume=85;
+if(localStorage.soundVolume===undefined) localStorage.soundVolume=100;
+if(localStorage.language===undefined) localStorage.language='eng';
+if(localStorage.balance===undefined) localStorage.balance=0;
+if(localStorage.reviews===undefined) localStorage.reviews = JSON.stringify([]);
+if(localStorage.usedNames===undefined) localStorage.usedNames = JSON.stringify([]);
+if(localStorage.ach===undefined) localStorage.ach = JSON.stringify({"first_step":0,"five_stars":0,"ten_clients":0,"hundred_clients":0});
+if(localStorage.clientsServed===undefined) localStorage.clientsServed = 0;
+if(localStorage.hasNewReview===undefined) localStorage.hasNewReview='false';
 
-  const clientsDiv = document.getElementById('clients');
-  const orderBubble = document.getElementById('orderBubble');
-  const acceptBtn = document.getElementById('acceptBtn');
-  const declineBtn = document.getElementById('declineBtn');
-  const door = document.getElementById('door');
-  const balanceDiv = document.getElementById('balance');
-  const starsDiv = document.getElementById('stars');
-  const reviewsBtn = document.getElementById('reviewsBtn');
-  const reviewsPanel = document.getElementById('reviewsPanel');
-  const achievementsPanel = document.getElementById('achievementsPanel');
+// ---- DOM ----
+const clientCard = document.getElementById('clientCard');
+const orderBubble = document.getElementById('orderBubble');
+const acceptBtn = document.getElementById('acceptBtn');
+const declineBtn = document.getElementById('declineBtn');
+const door = document.getElementById('door');
+const msgNote = document.getElementById('msgNote');
+const reviewsBtn = document.getElementById('reviewsBtn');
+const achBtn = document.getElementById('achBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const overlay = document.getElementById('overlay');
+const reviewsModal = document.getElementById('reviewsModal');
+const reviewsList = document.getElementById('reviewsList');
+const closeReviews = document.getElementById('closeReviews');
+const achModal = document.getElementById('achModal');
+const achModalList = document.getElementById('achModalList');
+const closeAch = document.getElementById('closeAch');
+const achList = document.getElementById('achList');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+const musicAudio = document.getElementById('musicAudio');
+const clickSound = document.getElementById('clickSound');
+const closeSound = document.getElementById('closeSound');
+const koverSound = document.getElementById('koverSound');
+const sh1Sound = document.getElementById('sh1Sound');
+const loadingSound = document.getElementById('loadingSound'); 
+const musicSlider = document.getElementById('musicSlider');
+const soundSlider = document.getElementById('soundSlider');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const languageBtn = document.getElementById('languageBtn');
+const potentialDigits = document.getElementById('potentialDigits');
+const balanceDigits = document.getElementById('balanceDigits');
+const starsDisplay = document.getElementById('starsDisplay');
+const msgNoteEl = document.getElementById('msgNote');
 
-  function randomName(){ return clientNames[Math.floor(Math.random()*clientNames.length)]; }
-  function randomAccessory(){ return accessories[Math.floor(Math.random()*accessories.length)]; }
-  function randomDrink(){ return drinks[Math.floor(Math.random()*drinks.length)]; }
+// ---- State ----
+let currentClient = null; // {name, product, potential}
+// init UI sound volumes for interface sounds
+[clickSound, closeSound, koverSound, sh1Sound].forEach(s=>{ if(s) s.volume = localStorage.soundVolume/100; }); 
+let canAccept = true;
+let awaitingKitchenReturn = false; // cafe waits for kitchen result (kitchen will push review)
 
-  function createClient(){
-    const div = document.createElement('div');
-    div.className = 'client';
-    const name = randomName();
-    const accessory = randomAccessory();
-    const drink = randomDrink();
-    div.dataset.name=name;
-    div.dataset.accessory=accessory;
-    div.dataset.drink=drink;
-    const nameDiv = document.createElement('div');
-    nameDiv.className='client-name';
-    nameDiv.innerText=name;
-    div.appendChild(nameDiv);
-    clientsDiv.appendChild(div);
+// ---- Utilities ----
+function saveBalance(v){ localStorage.balance = Number(v); renderBalance(); }
+function addBalance(delta){ localStorage.balance = Number(localStorage.balance) + Number(delta); renderBalance(); animateBalancePulse(); }
+function animateBalancePulse(){ const el = balanceDigits; if(!el) return; el.classList.add('pulse'); setTimeout(()=>el.classList.remove('pulse'),900); }
+function getReviews(){ try{return JSON.parse(localStorage.reviews||'[]')}catch(e){return []} }
+function setReviews(arr){ localStorage.reviews = JSON.stringify(arr); }
+function getAch(){ try{return JSON.parse(localStorage.ach||'{}')}catch(e){return {}} }
+function setAch(obj){ localStorage.ach = JSON.stringify(obj); renderAchList(); }
+function uniqueName(){ const used = new Set(JSON.parse(localStorage.usedNames||'[]')); const syll = ['ла','лу','ли','ле','ло','да','до','ди','ду','ра','ро','ри','ру','на','но','ну','ня','та','то','ту','тя','ка','ко','ку','ки','ча','чу','ши','ша']; let tries=0; let name=''; do{ const len = 2 + Math.floor(Math.random()*3); name = Array.from({length:len},()=> syll[Math.floor(Math.random()*syll.length)]).join(''); name = name.charAt(0).toUpperCase()+name.slice(1); tries++; if(tries>2000) break; }while(used.has(name)); used.add(name); localStorage.usedNames = JSON.stringify([...used]); return name; }
 
-    div.addEventListener('click', ()=>{
-      currentClient = div.dataset;
-      showOrderBubble(div);
-    });
+function formatDigits(container, value){ container.innerHTML=''; const s = String(value); for(const ch of s){ const d = document.createElement('div'); d.className='digit'; d.textContent = ch; container.appendChild(d); } }
+
+// ---- Render HUD ----
+
+// ---- i18n / Language support ----
+const TEXTS = {
+  ru: {
+    potential: 'Заработок', balance: 'Баланс', rating: 'Рейтинг',
+    reviewsTitle: 'Отзывы', achTitle: 'Ачивки', settingsTitle: 'Настройки',
+    musicLabel: 'Музыка', soundLabel: 'Звук (резерв)', fullscreen: 'Fullscreen', language: 'Язык', close: 'Закрыть',
+    msgNew: 'У вас новое сообщение — отзыв (клик, чтобы посмотреть)',
+    doorHint: 'Перейти на кухню', accept: 'Принять', decline: 'Отклонить'
+  },
+  eng: {
+    potential: 'Potential', balance: 'Balance', rating: 'Rating',
+    reviewsTitle: 'Reviews', achTitle: 'Achievements', settingsTitle: 'Settings',
+    musicLabel: 'Music', soundLabel: 'Sound (misc)', fullscreen: 'Fullscreen', language: 'Language', close: 'Close',
+    msgNew: 'You have a new message — review (click to view)',
+    doorHint: 'Go to kitchen', accept: 'Accept', decline: 'Decline'
   }
+};
 
-  function showOrderBubble(clientDiv){
-    orderBubble.innerText = clientDiv.dataset.drink;
-    const rect = clientDiv.getBoundingClientRect();
-    orderBubble.style.left=rect.left + 'px';
-    orderBubble.style.bottom=(window.innerHeight - rect.top + 50)+'px';
-    orderBubble.style.opacity=1;
+function updateLanguageUI(){ const L = localStorage.language || 'eng';
+  const t = TEXTS[L] || TEXTS.eng;
+  const potentialLabel = document.getElementById('potentialLabel'); if(potentialLabel) potentialLabel.textContent = t.potential;
+  const balanceLabel = document.getElementById('balanceLabel'); if(balanceLabel) balanceLabel.textContent = t.balance;
+  const ratingLabel = document.getElementById('ratingLabel'); if(ratingLabel) ratingLabel.textContent = t.rating;
+  const revBig = document.querySelector('#reviewsModal .big'); if(revBig) revBig.textContent = t.reviewsTitle;
+  const achBig = document.querySelector('#achModal .big'); if(achBig) achBig.textContent = t.achTitle;
+  const msg = document.getElementById('msgNote'); if(msg) msg.textContent = t.msgNew;
+  // settings labels
+  const labels = settingsModal.querySelectorAll('label'); if(labels[0]) labels[0].firstChild.nodeValue = t.musicLabel + ' ';
+  if(labels[1]) labels[1].firstChild.nodeValue = t.soundLabel + ' ';
+
+  // swap images for settings/fullscreen/language like in index.html
+  const settingsBtnImg = document.querySelector('#settingsBtn img');
+  const fullscreenBtnImg = document.querySelector('#fullscreenBtn img');
+  const languageBtnImg = document.querySelector('#languageBtn img');
+  if(L==='eng'){
+    if(settingsBtnImg) settingsBtnImg.src = 'SettingsEng.png';
+    if(fullscreenBtnImg) fullscreenBtnImg.src = 'FullscreenEng.png';
+    if(languageBtnImg) languageBtnImg.src = 'LanguageEng.png';
+  } else {
+    if(settingsBtnImg) settingsBtnImg.src = 'SettingsRu.png';
+    if(fullscreenBtnImg) fullscreenBtnImg.src = 'FullscreenRu.png';
+    if(languageBtnImg) languageBtnImg.src = 'LanguageRu.png';
   }
+}
 
-  for(let i=0;i<3;i++) createClient();
+// call once
+updateLanguageUI();
 
-  // ===== Accept / Decline =====
-  acceptBtn.addEventListener('click', ()=>{
-    if(!currentClient) return;
-    // Save current order to localStorage for kitchen
-    localStorage.currentOrder = JSON.stringify(currentClient);
-    alert('Go to kitchen to prepare this order!');
-  });
 
-  declineBtn.addEventListener('click', ()=>{
-    if(!currentClient) return;
-    const reviews = JSON.parse(localStorage.reviews);
-    reviews.push({name:currentClient.name,stars:1,comment:"Не приняли заказ, денег нет"});
-    localStorage.reviews = JSON.stringify(reviews);
-    localStorage.totalStars = parseInt(localStorage.totalStars)+1; // упрощенно
-    updateUI();
-    alert('Order declined. 1 star added.');
-  });
+function renderBalance(){ formatDigits(balanceDigits, localStorage.balance||0); }
+function renderPotential(v){ formatDigits(potentialDigits, v||0); }
+function renderStars(){ const revs = getReviews(); if(revs.length===0){ starsDisplay.textContent = '1.0 ✮'; return; } const avg = (revs.reduce((s,r)=>s+(r.stars||0),0)/revs.length); starsDisplay.textContent = avg.toFixed(2)+' ✮'; }
 
-  function updateUI(){
-    balanceDiv.innerText='💰 $'+localStorage.balance;
-    starsDiv.innerText='⭐ '+localStorage.totalStars;
+// ---- Spawn client ----
+
+// small helper animations
+function fadeInElement(el,duration=350){ if(!el) return; el.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`; el.style.opacity = '1'; }
+
+
+const PRODUCTS = ['matcha','tea','coffee','donut'];
+function rollOrder(){ const kind = PRODUCTS[Math.floor(Math.random()*PRODUCTS.length)]; // potential for 5★
+  const potentials = {matcha:130, tea:50, coffee:100, donut:80};
+  return {product:kind, potential:potentials[kind]||20}; }
+
+function spawnClient(){ if(currentClient) return; // only one
+  const name = uniqueName(); const order = rollOrder(); currentClient = {name, order}; canAccept = true; awaitingKitchenReturn=false;
+  clientCard.classList.remove('leave'); clientCard.classList.add('arrive'); clientCard.textContent = 'К'; clientCard.setAttribute('title', name);
+  orderBubble.textContent = order.product.toUpperCase(); renderPotential(order.potential);
+}
+
+function clientLeave(afterMs=800){ if(!currentClient) return; clientCard.classList.remove('arrive'); clientCard.classList.add('leave'); currentClient = null; orderBubble.textContent='—'; renderPotential(0); setTimeout(()=>{ setTimeout(spawnClient,5000); }, afterMs); }
+
+// ---- Review logic (cafe-side) ----
+function addReview(review){ const arr=getReviews(); arr.unshift(review); setReviews(arr); renderStars(); localStorage.hasNewReview='true'; showMsgNote(); }
+
+function showMsgNote(){ msgNoteEl.classList.add('show'); msgNoteEl.onclick = ()=>{ openReviews(); msgNoteEl.classList.remove('show'); localStorage.hasNewReview='false'; }; // auto hide after 10s
+  setTimeout(()=>{ msgNoteEl.classList.remove('show'); localStorage.hasNewReview='false'; },10000);
+}
+
+// ---- Accept / Decline handlers ----
+acceptBtn.addEventListener('click', ()=>{
+  if(!currentClient || !canAccept) return;
+  // mark order accepted — full processing happens in kitchen.html
+  canAccept = false; awaitingKitchenReturn = true; // cafe waits for kitchen result
+  // save current order to localStorage for kitchen to pick up
+  localStorage.currentOrder = JSON.stringify({client:currentClient.name, product:currentClient.order.product, potential:currentClient.order.potential, timestamp:Date.now()});
+  // visual feedback
+  acceptBtn.style.opacity = '0.6';
+  // door is always active, but show small note
+  // we don't remove client — client stays until kitchen returns or player comes back.
+});
+
+declineBtn.addEventListener('click', ()=>{
+  if(!currentClient) return;
+  // immediate 1★ review
+  addReview({name:currentClient.name, stars:1, text:getDeclineText()});
+  // count served++
+  localStorage.clientsServed = Number(localStorage.clientsServed||0)+1;
+  checkAchievementsOnDecline();
+  // client leaves
+  clientLeave();
+});
+
+function getDeclineText(){ return (localStorage.language==='ru')? 'Не приняли заказ.' : 'Order was declined.'; }
+
+// ---- Door (always clickable) ----
+door.addEventListener('click', ()=>{
+  // navigate to kitchen; kitchen will be implemented separately
+  // save current order if any
+  if(currentClient && canAccept){ // if order not accepted, still you can go
+    localStorage.currentOrder = JSON.stringify({client:currentClient.name, product:currentClient.order.product, potential:currentClient.order.potential, timestamp:Date.now()});
   }
+  window.location.href = 'kitchen.html';
+});
 
-  updateUI();
+// ---- Reviews modal ----
+function openReviews(){ overlay.classList.add('show'); reviewsModal.style.display='block'; achModal.style.display='none'; settingsModal.style.display='none'; renderReviews(); }
+function closeAllModals(){ overlay.classList.remove('show'); reviewsModal.style.display='none'; achModal.style.display='none'; settingsModal.style.display='none'; }
 
-  // ===== Door to kitchen =====
-  door.addEventListener('click', ()=>{
-    if(localStorage.currentOrder) window.location.href='kitchen.html';
-    else alert('Accept an order first!');
-  });
+reviewsBtn.addEventListener('click', openReviews);
+closeReviews.addEventListener('click', closeAllModals);
 
-  // ===== Reviews panel =====
-  reviewsBtn.addEventListener('click', ()=>{
-    const reviews = JSON.parse(localStorage.reviews);
-    reviewsPanel.innerHTML='';
-    reviewsPanel.style.display = reviewsPanel.style.display==='none'?'block':'none';
-    reviews.forEach(r=>{
-      const div = document.createElement('div');
-      div.className='review';
-      div.innerHTML=`<b>${r.name}</b> ${'✮'.repeat(r.stars)}<br>${r.comment}`;
-      reviewsPanel.appendChild(div);
-    });
-  });
+// ---- Achievements ----
+function renderAchList(){ const ach = getAch(); achList.innerHTML=''; const defs = [ ['Первый шаг','first_step','Выполнить первый заказ, +50$'], ['5 звёздочек!','five_stars','Получить идеальный отзыв (5✮), +100$'], ['10 клиентов','ten_clients','Обслужить 10 клиентов, +200$'], ['100 клиентов','hundred_clients','Обслужить 100 клиентов, +2000$'] ]; for(const [title,key,desc] of defs){ const item = document.createElement('div'); item.className='ach-item'; item.innerHTML = `<div style="width:40px;height:40px;border-radius:8px;background:#fdebd0;display:flex;align-items:center;justify-content:center">🏅</div><div><div style="font-weight:700">${title}</div><div class="muted">${desc}</div><div class="muted">Прогресс: ${ach[key]||0}</div></div>`; achList.appendChild(item); }
+}
 
-  // ===== Achievements =====
-  const achievementsList = [
-    {name:'First Step',desc:'Complete first order',money:50},
-    {name:'5 Stars!',desc:'Get perfect review',money:100},
-    {name:'10 Clients',desc:'Serve 10 clients',money:200},
-    {name:'100 Clients',desc:'Serve 100 clients',money:2000},
-    {name:'Experimenter',desc:'Add 7+ ingredients',money:150},
-    {name:'Empty Cup',desc:'Give empty cup',money:50},
-    {name:'Unhappy Client',desc:'Fail 5 orders',money:200},
-    {name:'Speedy Barista',desc:'Finish order <10s',money:300},
-    {name:'Meditative Kettle',desc:'Boil water 5 times',money:100},
-    {name:'Eat Everything',desc:'Use eat 20 times',money:100},
-    {name:'Taster',desc:'Try all ingredients',money:400},
-    {name:'Perfect Choice',desc:'Accept all orders 10 times',money:300},
-    {name:'Picky',desc:'Decline 10 times',money:150},
-    // secret
-    {name:'Night Barista',desc:'Enter after midnight',money:250,secret:true},
-    {name:'Double Boil',desc:'Boil again',money:150,secret:true},
-    {name:'Barista Mischief',desc:'>20 marshmallows',money:500,secret:true},
-    {name:'Capy in Hat',desc:'Serve client with hat perfectly',money:350,secret:true},
-    {name:'Merciless',desc:'Kick 5 clients',money:200,secret:true},
-  ];
+achBtn.addEventListener('click', ()=>{ overlay.classList.add('show'); achModal.style.display='block'; reviewsModal.style.display='none'; settingsModal.style.display='none'; renderAchModal(); });
+closeAch.addEventListener('click', closeAllModals);
 
-  function checkAchievements(){
-    const unlocked = JSON.parse(localStorage.achievements);
-    achievementsList.forEach(a=>{
-      if(!unlocked.includes(a.name)){
-        // Simplified check, just unlock first step when first order exists
-        if(a.name==='First Step' && localStorage.currentOrder){
-          unlocked.push(a.name);
-          localStorage.achievements = JSON.stringify(unlocked);
-          showAchievement(a);
-        }
-      }
-    });
-  }
+function renderAchModal(){ achModalList.innerHTML=''; const ach = getAch(); for(const k in ach){ const row = document.createElement('div'); row.className='review-item'; row.innerHTML = `<div style="font-weight:700">${k}</div><div class="muted">Прогресс: ${ach[k]}</div>`; achModalList.appendChild(row); } }
 
-  function showAchievement(a){
-    achievementsPanel.innerHTML=`🌟 ${a.name} - ${a.desc} (+$${a.money})`;
-    achievementsPanel.style.display='block';
-    setTimeout(()=>{achievementsPanel.style.display='none';},4000);
-  }
+function awardAchievement(key){ const ach = getAch(); if(!ach[key]) ach[key]=0; ach[key] = (ach[key]||0) + 1; setAch(ach); // popup
+  showAchPopup(key); }
 
-  checkAchievements();
+function showAchPopup(key){ const popup = document.createElement('div'); popup.className='review-item'; popup.style.position='fixed'; popup.style.left='50%'; popup.style.top='20%'; popup.style.transform='translateX(-50%)'; popup.style.zIndex=9999; popup.style.padding='14px 18px'; popup.innerHTML = `<strong>Ачивка:</strong> ${key}`; document.body.appendChild(popup); setTimeout(()=>popup.remove(),3000); }
+
+// ---- Check achievements triggers (cafe-side) ----
+function checkAchievementsOnAccept(){ // when accepted, we can increment first_step progress later maybe when kitchen returns
+}
+function checkAchievementsOnDecline(){ // track consecutive declines? simple increment for demonstration
+  const ach = getAch(); ach['ten_clients'] = (ach['ten_clients']||0) + 0; setAch(ach);
+}
+
+// ---- Reviews rendering ----
+function renderReviews(){ reviewsList.innerHTML=''; const arr = getReviews(); if(arr.length===0){ reviewsList.innerHTML='<div class="muted">Пока нет отзывов</div>'; return; } for(const r of arr){ const it = document.createElement('div'); it.className='review-item'; it.innerHTML = `<div class="review-name">${r.name} ${'✮'.repeat(r.stars||1)}${'✫'.repeat(5-(r.stars||1))}</div><div class="review-text">${r.text}</div>`; reviewsList.appendChild(it); } }
+
+// ---- Settings modal ----
+settingsBtn.addEventListener('click', ()=>{ clickSound && clickSound.play(); settingsModal.classList.add('show'); overlay.classList.add('show'); reviewsModal.style.display='none'; achModal.style.display='none'; musicSlider.value = localStorage.musicVolume; soundSlider.value = localStorage.soundVolume; });
+closeSettings.addEventListener('click', ()=>{ closeSound && closeSound.play(); settingsModal.classList.remove('show'); overlay.classList.remove('show'); });
+
+musicSlider.addEventListener('input', ()=>{ localStorage.musicVolume = musicSlider.value; musicAudio.volume = musicSlider.value/100; koverSound && (koverSound.volume = soundSlider.value/100); koverSound && koverSound.play(); });
+soundSlider.addEventListener('input', ()=>{ localStorage.soundVolume = soundSlider.value; [clickSound, closeSound, koverSound, sh1Sound].forEach(s=>{ if(s) s.volume = soundSlider.value/100; }); koverSound && koverSound.play(); });
+fullscreenBtn.addEventListener('click', ()=>{ if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); localStorage.fullscreen = true; } else { document.exitFullscreen(); localStorage.fullscreen = false; } });
+languageBtn.addEventListener('click', ()=>{ localStorage.language = (localStorage.language==='ru')? 'eng':'ru'; updateLanguageUI(); });
+
+// ---- Init / Boot ----
+function boot(){ renderBalance(); renderStars(); renderAchList(); spawnClient(); // if returned from kitchen with review flag, show message
+  if(localStorage.hasNewReview==='true'){ showMsgNote(); localStorage.hasNewReview='false'; }
+  // music
+  musicAudio.volume = localStorage.musicVolume/100; musicAudio.play().catch(()=>{ document.body.addEventListener('click', ()=>musicAudio.play(), {once:true}); });
+  // initialize settings sliders
+  musicSlider.value = localStorage.musicVolume; soundSlider.value = localStorage.soundVolume; updateLanguageUI();
+}
+
+// ---- Cross-tab sync (if settings changed on index.html or another tab) ----
+window.addEventListener('storage', (e)=>{
+  try{
+    if(e.key==='musicVolume'){ musicSlider.value = e.newValue; musicAudio.volume = e.newValue/100; }
+    if(e.key==='soundVolume'){ soundSlider.value = e.newValue; }
+    if(e.key==='language'){ updateLanguageUI(); }
+    if(e.key==='balance'){ renderBalance(); }
+  }catch(err){/* ignore for unavailable nodes */}
+});
+
+boot();
+
+// ---- Expose some helpers for kitchen to call when done (external contract) ----
+// kitchen.html can call: window.opener.addReviewFromKitchen(...) if opened as popup, or simply set localStorage.reviews
+// We'll also expose a global function to simulate kitchen returning with a review (useful for testing)
+window.addReviewFromKitchen = function(name, stars, text, moneyEarned){
+  // Adjust money by cafe rating multiplier (based on current average BEFORE adding this review)
+  const reviewsBefore = getReviews();
+  const avg = reviewsBefore.length ? (reviewsBefore.reduce((s,r)=>s+(r.stars||0),0)/reviewsBefore.length) : 1;
+  function moneyMultiplier(avgStars){ if(avgStars<=1) return 0.8; if(avgStars<=2) return 0.9; if(avgStars<=3) return 1.0; if(avgStars<=4) return 1.1; return 1.25; }
+  const mult = moneyMultiplier(avg);
+  addReview({name, stars, text});
+  if(moneyEarned){ const adjusted = Math.round(moneyEarned * mult); addBalance(adjusted); }
+  localStorage.clientsServed = Number(localStorage.clientsServed||0)+1;
+  if(stars===5){ awardAchievement('five_stars'); addBalance(100); }
+  if(localStorage.clientsServed==1) { awardAchievement('first_step'); addBalance(50); }
+  if(Number(localStorage.clientsServed)%10===0) awardAchievement('ten_clients');
+  if(Number(localStorage.clientsServed)%100===0) awardAchievement('hundred_clients');
+  clientLeave(400);
+};
+
+// allow testing via console: window.addReviewFromKitchen('Имя',5,'Отлично',130)
 
 </script>
 </body>
